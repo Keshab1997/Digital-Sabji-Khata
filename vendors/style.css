@@ -1,0 +1,22 @@
+#vendorForm input {
+  width: calc(50% - 10px);
+  padding: 10px;
+  margin: 5px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.vendor-item {
+  background: var(--white);
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.due-amount {
+  color: var(--danger);
+  font-weight: bold;
+}
