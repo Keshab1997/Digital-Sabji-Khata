@@ -20,7 +20,7 @@
         <div class="bill-paper" id="printable-bill">
             <div class="bill-header">
                 <div class="top-meta">
-                    <span>Bill No: <b id="disp-bill-no">...</b></span>
+                    <span>Bill No: <b id="disp-bill-no">00000</b></span>
                     <span>Date: <b id="disp-date"></b></span>
                 </div>
                 <h1 id="disp-shop-name">SHOP NAME</h1>
@@ -37,11 +37,11 @@
             <table class="bill-table">
                 <thead>
                     <tr>
-                        <th width="10%">Sl.</th>
-                        <th width="45%">Description</th>
-                        <th width="15%">KG</th>
-                        <th width="15%">Rate</th>
-                        <th width="15%">Amt</th>
+                        <th class="col-sl">Sl.</th>
+                        <th class="col-desc">Description</th>
+                        <th class="col-kg">KG</th>
+                        <th class="col-rate">Rate</th>
+                        <th class="col-amt">Amt</th>
                     </tr>
                 </thead>
                 <tbody id="bill-body"></tbody>
@@ -66,7 +66,7 @@
 
     <div class="no-print fixed-action-panel">
         <div class="action-buttons">
-            <button class="btn btn-primary" onclick="window.print()">🖨️ Print</button>
+            <button class="btn btn-primary" onclick="finalizeAndPrint()">🖨️ Print</button>
             <button class="btn btn-whatsapp" onclick="shareBillAsImage()">🟢 WhatsApp</button>
             <button class="btn btn-secondary" onclick="addNewVeg()">+ Add Veg</button>
             <button class="btn btn-danger" onclick="clearBill()">🗑️ Clear</button>
