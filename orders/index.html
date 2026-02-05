@@ -1,25 +1,35 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Orders - VegBillPro</title>
-  <link rel="stylesheet" href="../assets/global.css">
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Orders - VegBill Pro</title>
+    <link rel="stylesheet" href="../assets/global.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <div id="navbar"></div>
-  
-  <div class="container">
-    <h1>Orders</h1>
-    <div id="orderList"></div>
-  </div>
+    <div class="container">
+        <div class="card">
+            <h2>New Order Entry</h2>
+            <div class="order-form">
+                <input type="text" id="cust_name" placeholder="Customer Name">
+                <input type="text" id="cust_phone" placeholder="Phone Number (WhatsApp)">
+                <textarea id="order_details" rows="4" placeholder="Order List (e.g: 5 kg potato, 2 kg onion...)"></textarea>
+                <button class="btn btn-primary" onclick="saveOrder()">Save Order</button>
+            </div>
+        </div>
 
-  <div id="footer"></div>
+        <div class="card">
+            <h2>Current Orders List</h2>
+            <div id="order-list">
+                <!-- Dynamically loaded -->
+            </div>
+        </div>
+    </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../assets/supabase-config.js"></script>
-  <script src="../assets/components.js"></script>
-  <script src="script.js"></script>
+    <script src="../assets/supabase-config.js"></script>
+    <script src="../assets/components.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

@@ -1,14 +1,18 @@
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  
-  if (error) {
-    alert('Login failed: ' + error.message);
-  } else {
-    window.location.href = '/';
-  }
-});
+async function doLogin() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const msg = document.getElementById('error-msg');
+
+    msg.innerText = "Verifying...";
+
+    const { data, error } = await _supabase.auth.signInWithPassword({
+        email: email,
+        password: password
+    });
+
+    if (error) {
+        msg.innerText = "Invalid email or password!";
+    } else {
+        window.location.href = '../index.html';
+    }
+}

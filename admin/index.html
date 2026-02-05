@@ -1,28 +1,42 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin - VegBillPro</title>
-  <link rel="stylesheet" href="../assets/global.css">
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - VegBill Pro</title>
+    <link rel="stylesheet" href="../assets/global.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <div id="navbar"></div>
-  
-  <div class="container">
-    <h1>Admin & Settings</h1>
-    <div class="card">
-      <h2>System Settings</h2>
-      <p>Configure your VegBillPro settings here</p>
+    <div class="container">
+        <div class="card">
+            <h2>Shop Settings</h2>
+            <div class="admin-form">
+                <label>Shop Name:</label>
+                <input type="text" id="shop_name" placeholder="e.g: Fresh Vegetable Store">
+                
+                <label>Slogan:</label>
+                <input type="text" id="slogan" placeholder="All kinds of fresh vegetables">
+                
+                <label>Address:</label>
+                <textarea id="address" placeholder="Kolkata, 700001..."></textarea>
+                
+                <label>Mobile:</label>
+                <input type="text" id="mobile" placeholder="+91 8888888888">
+
+                <div class="trial-info">
+                    <p><strong>Subscription Status:</strong> <span id="trial_status" style="color:green;">Active</span></p>
+                    <p>Expires on: <span id="trial_date">...</span></p>
+                </div>
+                
+                <button class="btn btn-primary" onclick="updateProfile()">Save Settings</button>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <div id="footer"></div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../assets/supabase-config.js"></script>
-  <script src="../assets/components.js"></script>
-  <script src="script.js"></script>
+    <script src="../assets/supabase-config.js"></script>
+    <script src="../assets/components.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

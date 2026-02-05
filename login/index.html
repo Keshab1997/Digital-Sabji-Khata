@@ -1,26 +1,32 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - VegBillPro</title>
-  <link rel="stylesheet" href="../assets/global.css">
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - VegBill Pro</title>
+    <link rel="stylesheet" href="../assets/global.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <div class="login-container">
-    <div class="login-card card">
-      <h1>VegBillPro</h1>
-      <form id="loginForm">
-        <input type="email" id="email" placeholder="Email" required>
-        <input type="password" id="password" placeholder="Password" required>
-        <button type="submit" class="btn btn-primary">Login</button>
-      </form>
+    <div class="login-wrapper">
+        <div class="card login-card">
+            <h2 style="text-align: center; color: var(--secondary);">VegBill Pro</h2>
+            <p style="text-align: center; color: #666;">Shopkeeper Login</p>
+            
+            <input type="email" id="email" placeholder="Email Address">
+            <input type="password" id="password" placeholder="Password">
+            
+            <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="doLogin()">Login</button>
+            <p id="error-msg" style="color: red; text-align: center; margin-top: 10px;"></p>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <p style="font-size: 14px;">New user? <a href="../signup/index.html" style="color: var(--primary); text-decoration: none; font-weight: bold;">Create Account</a></p>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../assets/supabase-config.js"></script>
-  <script src="script.js"></script>
+    <script src="../assets/supabase-config.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

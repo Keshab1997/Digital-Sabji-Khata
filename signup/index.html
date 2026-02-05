@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - VegBill Pro</title>
+    <link rel="stylesheet" href="../assets/global.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="signup-wrapper">
+        <div class="card signup-card">
+            <h2 style="text-align: center; color: var(--secondary);">VegBill Pro</h2>
+            <p style="text-align: center; color: #666; margin-bottom: 20px;">New Shopkeeper Registration</p>
+            
+            <div class="input-group">
+                <label for="shopName">Shop Name</label>
+                <input type="text" id="shopName" placeholder="e.g: Fresh Vegetable Store">
+            </div>
+
+            <div class="input-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" placeholder="example@mail.com">
+            </div>
+
+            <div class="input-group">
+                <label for="password">Password (minimum 6 characters)</label>
+                <input type="password" id="password" placeholder="******">
+            </div>
+
+            <div class="input-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" placeholder="******">
+            </div>
+            
+            <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" id="signupBtn" onclick="doSignUp()">Create Account</button>
+            
+            <p id="msg" style="text-align: center; margin-top: 15px; font-size: 14px;"></p>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <p style="font-size: 14px;">Already have an account? <a href="../login/index.html" style="color: var(--primary); text-decoration: none; font-weight: bold;">Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/supabase-config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

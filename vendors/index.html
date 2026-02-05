@@ -1,32 +1,49 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vendors - VegBillPro</title>
-  <link rel="stylesheet" href="../assets/global.css">
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendors - VegBill Pro</title>
+    <link rel="stylesheet" href="../assets/global.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <div id="navbar"></div>
-  
-  <div class="container">
-    <h1>Vendors & Due</h1>
-    <div class="card">
-      <form id="vendorForm">
-        <input type="text" id="vendorName" placeholder="Vendor Name" required>
-        <input type="number" id="dueAmount" placeholder="Due Amount" required>
-        <button type="submit" class="btn btn-primary">Add Vendor</button>
-      </form>
+    <div class="container">
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>Vendor List</h2>
+                <button class="btn btn-primary" onclick="showAddVendor()">+ New Vendor</button>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sl.</th>
+                            <th>Name</th>
+                            <th>Due Amount</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vendor-list-body">
+                        <!-- Data will load here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Details Section (opens on click) -->
+        <div id="vendor-history" class="card" style="display:none;">
+            <h2 id="v-history-name">History</h2>
+            <div id="history-content"></div>
+            <button class="btn btn-secondary" onclick="document.getElementById('vendor-history').style.display='none'">Close</button>
+        </div>
     </div>
-    <div id="vendorList"></div>
-  </div>
 
-  <div id="footer"></div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../assets/supabase-config.js"></script>
-  <script src="../assets/components.js"></script>
-  <script src="script.js"></script>
+    <script src="../assets/supabase-config.js"></script>
+    <script src="../assets/components.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

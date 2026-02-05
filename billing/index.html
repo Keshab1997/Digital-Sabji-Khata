@@ -1,32 +1,81 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Billing - VegBillPro</title>
-  <link rel="stylesheet" href="../assets/global.css">
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>VegBill Pro - Billing</title>
+    <link rel="stylesheet" href="../assets/global.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
-  <div id="navbar"></div>
-  
-  <div class="container">
-    <h1>Billing</h1>
-    <div class="card">
-      <form id="billForm">
-        <input type="text" id="customerName" placeholder="Customer Name" required>
-        <input type="number" id="amount" placeholder="Amount" required>
-        <button type="submit" class="btn btn-primary">Create Bill</button>
-      </form>
+
+<div class="app-container">
+    <header class="no-print top-search-bar">
+        <input type="text" id="veg-search" placeholder="Search vegetable..." oninput="filterVeg()">
+    </header>
+
+    <main class="scrollable-content">
+        <div class="bill-paper" id="printable-bill">
+            <div class="bill-header">
+                <div class="top-meta">
+                    <span>Bill No: <b id="disp-bill-no">...</b></span>
+                    <span>Date: <b id="disp-date"></b></span>
+                </div>
+                <h1 id="disp-shop-name">SHOP NAME</h1>
+                <p id="disp-slogan" class="slogan"></p>
+                <p id="disp-address" class="address"></p>
+                <p id="disp-mobile" class="mobile"></p>
+            </div>
+
+            <div class="vendor-info">
+                <div class="info-line">Name: <input type="text" id="v-name" placeholder="Vendor Name"></div>
+                <div class="info-line">Address: <input type="text" id="v-addr" placeholder="Vendor Address"></div>
+            </div>
+
+            <table class="bill-table">
+                <thead>
+                    <tr>
+                        <th width="10%">Sl.</th>
+                        <th width="45%">Description</th>
+                        <th width="15%">KG</th>
+                        <th width="15%">Rate</th>
+                        <th width="15%">Amt</th>
+                    </tr>
+                </thead>
+                <tbody id="bill-body"></tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4" class="text-right">TOTAL</td>
+                        <td id="grand-total" class="total-val">0</td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <div class="bill-footer">
+                <p><b>Rupees in words:</b> <i id="amt-words">Zero Rupees Only</i></p>
+                <div class="signature-section">
+                    <p>For, <span id="disp-sig-name">Shop Owner</span></p>
+                    <div class="sig-line">Signature</div>
+                </div>
+            </div>
+        </div>
+        <div style="height: 160px;"></div>
+    </main>
+
+    <div class="no-print fixed-action-panel">
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="window.print()">🖨️ Print</button>
+            <button class="btn btn-whatsapp" onclick="shareBillAsImage()">🟢 WhatsApp</button>
+            <button class="btn btn-secondary" onclick="addNewVeg()">+ Add Veg</button>
+            <button class="btn btn-danger" onclick="clearBill()">🗑️ Clear</button>
+        </div>
     </div>
-    <div id="billList"></div>
-  </div>
+</div>
 
-  <div id="footer"></div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../assets/supabase-config.js"></script>
-  <script src="../assets/components.js"></script>
-  <script src="script.js"></script>
+<script src="../assets/supabase-config.js"></script>
+<script src="../assets/components.js"></script>
+<script src="script.js"></script>
 </body>
 </html>

@@ -1,24 +1,21 @@
+.order-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
 .order-item {
-  background: var(--white);
-  padding: 20px;
-  margin: 15px 0;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-left: 5px solid var(--primary);
+    padding: 15px;
+    margin-bottom: 10px;
+    background: #f9f9f9;
+    border-radius: 5px;
+    position: relative;
 }
-
-.order-status {
-  display: inline-block;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 12px;
+.order-item h3 { margin: 0; font-size: 18px; color: var(--secondary); }
+.order-item p { margin: 5px 0; font-size: 14px; }
+.order-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
 }
-
-.status-pending {
-  background: var(--warning);
-  color: white;
-}
-
-.status-completed {
-  background: var(--primary);
-  color: white;
-}
+.whatsapp-btn { background: #25D366; color: white; text-decoration: none; padding: 5px 10px; border-radius: 5px; font-size: 12px; }

@@ -1,30 +1,27 @@
-function renderNavbar() {
-  return `
-    <nav style="background: var(--primary); padding: 15px 20px; color: white;">
-      <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto;">
-        <h2>VegBillPro</h2>
-        <div style="display: flex; gap: 20px;">
-          <a href="/" style="color: white; text-decoration: none;">Dashboard</a>
-          <a href="/billing/" style="color: white; text-decoration: none;">Billing</a>
-          <a href="/orders/" style="color: white; text-decoration: none;">Orders</a>
-          <a href="/vendors/" style="color: white; text-decoration: none;">Vendors</a>
-          <a href="/admin/" style="color: white; text-decoration: none;">Admin</a>
-          <button onclick="logout()" class="btn" style="background: var(--danger);">Logout</button>
-        </div>
-      </div>
-    </nav>
-  `;
-}
+document.addEventListener("DOMContentLoaded", function() {
+    const isRoot = !window.location.pathname.includes('/billing/') && 
+                   !window.location.pathname.includes('/orders/') && 
+                   !window.location.pathname.includes('/vendors/') && 
+                   !window.location.pathname.includes('/admin/') &&
+                   !window.location.pathname.includes('/login/');
+                   
+    const prefix = isRoot ? './' : '../';
 
-function renderFooter() {
-  return `
-    <footer style="background: var(--dark); color: white; text-align: center; padding: 20px; margin-top: 40px;">
-      <p>&copy; 2024 VegBillPro. All rights reserved.</p>
-    </footer>
-  `;
-}
+    if(window.location.href.includes('login')) return;
 
-async function logout() {
-  await supabase.auth.signOut();
-  window.location.href = '/login/';
+    const navbar = `
+    <div class="mobile-nav no-print" style="position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #ddd; display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);">
+        <a href="${prefix}index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">📊<br>Home</a>
+        <a href="${prefix}billing/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">📝<br>Bill</a>
+        <a href="${prefix}orders/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">📞<br>Order</a>
+        <a href="${prefix}admin/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">⚙️<br>Admin</a>
+    </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', navbar);
+});
+
+async function handleLogout() {
+    await _supabase.auth.signOut();
+    window.location.href = '../login/index.html';
 }
