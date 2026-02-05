@@ -3,6 +3,11 @@ async function doLogin() {
     const password = document.getElementById('password').value;
     const msg = document.getElementById('error-msg');
 
+    if(!email || !password) {
+        msg.innerText = "Please enter both email and password.";
+        return;
+    }
+
     msg.innerText = "Verifying...";
 
     const { data, error } = await _supabase.auth.signInWithPassword({

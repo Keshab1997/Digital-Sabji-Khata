@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function() {
                    
     const prefix = isRoot ? './' : '../';
 
-    if(window.location.href.includes('login')) return;
+    if(window.location.href.includes('login') || window.location.href.includes('signup')) return;
 
     const navbar = `
     <div class="mobile-nav no-print" style="position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #ddd; display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);">
@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", function() {
         <a href="${prefix}billing/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">📝<br>Bill</a>
         <a href="${prefix}orders/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">📞<br>Order</a>
         <a href="${prefix}admin/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">⚙️<br>Admin</a>
+        <a href="#" onclick="handleLogout()" style="text-align: center; text-decoration: none; color: #e74c3c; font-size: 12px;">🚪<br>Logout</a>
     </div>
     `;
 
@@ -22,6 +23,13 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 async function handleLogout() {
-    await _supabase.auth.signOut();
-    window.location.href = '../login/index.html';
+    if(confirm("Are you sure you want to logout?")) {
+        await _supabase.auth.signOut();
+        const isRoot = !window.location.pathname.includes('/billing/') && 
+                       !window.location.pathname.includes('/orders/') && 
+                       !window.location.pathname.includes('/vendors/') && 
+                       !window.location.pathname.includes('/admin/');
+        const prefix = isRoot ? './' : '../';
+        window.location.href = prefix + 'login/index.html';
+    }
 }

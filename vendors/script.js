@@ -1,26 +1,31 @@
 async function initVendors() {
-    await checkAuth();
-    loadVendors();
+    const user = await checkAuth();
+    if(user) loadVendors();
 }
 
 async function loadVendors() {
     const user = await checkAuth();
+    if(!user) return;
+    
     const { data: vendors } = await _supabase.from('vendors').select('*').eq('user_id', user.id);
 
     const tbody = document.getElementById('vendor-list-body');
     tbody.innerHTML = '';
 
-    vendors.forEach((v, i) => {
-        tbody.innerHTML += `
-            <tr onclick="viewVendorHistory(${v.id}, '${v.name}')">
-                <td>${i+1}</td>
-                <td style="font-weight:bold;">${v.name}</td>
-                <td style="color:red;">₹${v.total_due}</td>
-                <td><span class="status-tag ${v.total_due > 0 ? 'unpaid' : 'paid'}">${v.total_due > 0 ? 'Due' : 'Clear'}</span></td>
-                <td><button class="btn" style="padding:4px 8px; background:#ddd;" onclick="toggleStatus(event, ${v.id}, ${v.total_due})">Toggle Payment</button></td>
-            </tr>
-        `;
-    });
+    if(vendors) {
+        vendors.forEach((v, i) => {
+            tbody.innerHTML += `
+                <tr onclick="viewVendorHistory(${v.id}, '${v.name}')">
+                    <td>${i+1}</td>
+                    <td style="font-weight:bold;">${v.name}</td>
+                    <td>${v.address || 'N/A'}</td>
+                    <td style="color:red;">₹${v.total_due || 0}</td>
+                    <td><span class="status-tag ${v.total_due > 0 ? 'unpaid' : 'paid'}">${v.total_due > 0 ? 'Due' : 'Clear'}</span></td>
+                    <td><button class="btn" style="padding:4px 8px; background:#ddd;" onclick="toggleStatus(event, ${v.id}, ${v.total_due})">Toggle</button></td>
+                </tr>
+            `;
+        });
+    }
 }
 
 async function toggleStatus(e, id, currentDue) {
@@ -41,13 +46,23 @@ async function viewVendorHistory(vId, vName) {
 
 function showAddVendor() {
     const name = prompt("Enter vendor name:");
-    if(name) saveVendor(name);
+    if(!name) return;
+    const address = prompt("Enter vendor address:");
+    saveVendor(name, address);
 }
 
-async function saveVendor(name) {
+async function saveVendor(name, address) {
     const user = await checkAuth();
-    await _supabase.from('vendors').insert({ user_id: user.id, name: name, total_due: 0 });
-    loadVendors();
+    if(!user) return;
+    const { error } = await _supabase.from('vendors').insert({ 
+        user_id: user.id, 
+        name: name, 
+        address: address, 
+        total_due: 0 
+    });
+    
+    if(error) alert(error.message);
+    else loadVendors();
 }
 
 window.onload = initVendors;

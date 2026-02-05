@@ -1,7 +1,11 @@
 let currentProfile = null;
+let allVendors = [];
+let saveTimeout = null;
 
 async function initBilling() {
     const user = await checkAuth();
+    if(!user) return;
+
     document.getElementById('disp-date').innerText = new Date().toLocaleDateString('en-GB');
 
     const { data: profile } = await _supabase.from('profiles').select('*').eq('id', user.id).single();
@@ -12,13 +16,16 @@ async function initBilling() {
         document.getElementById('disp-address').innerText = profile.address || "";
         document.getElementById('disp-mobile').innerText = "Mobile: " + (profile.mobile || "");
         document.getElementById('disp-sig-name').innerText = profile.shop_name || "Owner";
-        
-        let nextBillNo = (profile.last_bill_no || 0) + 1;
-        document.getElementById('disp-bill-no').innerText = nextBillNo.toString().padStart(5, '0');
     }
 
-    const { data: vegList } = await _supabase.from('vegetable_prices').select('veg_name').eq('user_id', user.id);
-    
+    const { data: vendors } = await _supabase.from('vendors').select('*').eq('user_id', user.id);
+    if(vendors) {
+        allVendors = vendors;
+        const list = document.getElementById('vendor-list');
+        list.innerHTML = vendors.map(v => `<option value="${v.name}">`).join('');
+    }
+
+    const { data: vegList } = await _supabase.from('vegetable_prices').select('*').eq('user_id', user.id);
     const tbody = document.getElementById('bill-body');
     tbody.innerHTML = '';
     
@@ -30,14 +37,11 @@ async function initBilling() {
         "PATAL", "CHICHINGA", "BARBATI", "MOTOR SHUTI", "FULKOPI", "OL",
         "KOCHU", "LALKUMRO", "SHALGAM", "PALONGSHAK", "LALSAK", "PUISHAK"
     ];
+    const dbVegNames = vegList ? vegList.map(v => v.veg_name) : [];
+    const allVeggies = [...new Set([...dbVegNames, ...defaultVeggies])];
     
-    if (vegList && vegList.length > 0) {
-        const dbVegNames = vegList.map(v => v.veg_name);
-        const allVeggies = [...new Set([...dbVegNames, ...defaultVeggies])];
-        allVeggies.forEach((name, i) => createRow(name, i + 1));
-    } else {
-        defaultVeggies.forEach((name, i) => createRow(name, i + 1));
-    }
+    allVeggies.forEach((name, i) => createRow(name, i + 1));
+    loadDraft();
 }
 
 function createRow(name, sl) {
@@ -47,9 +51,10 @@ function createRow(name, sl) {
     tr.innerHTML = `
         <td class="col-sl">${sl}</td>
         <td class="col-desc"><b>${name}</b></td>
-        <td class="col-kg"><input type="number" class="qty" placeholder="0" oninput="calc(this)"></td>
+        <td class="col-kg"><input type="number" step="0.001" class="qty" placeholder="0.000" oninput="calc(this)"></td>
         <td class="col-rate"><input type="number" class="rate" placeholder="0" oninput="calc(this)"></td>
-        <td class="col-amt row-total" style="font-weight:bold; text-align:center;">0</td>
+        <td class="col-amt row-total">0</td>
+        <td class="col-del no-print"><button onclick="deleteVegRow(this, '${name}')">×</button></td>
     `;
     document.getElementById('bill-body').appendChild(tr);
 }
@@ -58,6 +63,12 @@ function calc(el) {
     const row = el.closest('tr');
     const q = parseFloat(row.querySelector('.qty').value) || 0;
     const r = parseFloat(row.querySelector('.rate').value) || 0;
+    
+    if(q > 0) {
+        let displayWeight = q < 1 ? (q * 1000) + " gm" : q + " kg";
+        row.querySelector('.qty').title = displayWeight; 
+    }
+
     const total = q * r;
     row.querySelector('.row-total').innerText = total > 0 ? Math.round(total) : 0;
     
@@ -65,6 +76,7 @@ function calc(el) {
     else row.classList.add('empty-row');
 
     updateGrandTotal();
+    triggerAutoSave();
 }
 
 function updateGrandTotal() {
@@ -74,15 +86,97 @@ function updateGrandTotal() {
     document.getElementById('amt-words').innerText = numberToWords(Math.round(total)) + " Rupees Only";
 }
 
+async function handleVendorSelect(val) {
+    const vendor = allVendors.find(v => v.name.trim().toLowerCase() === val.trim().toLowerCase());
+    if(vendor) {
+        document.getElementById('v-addr').value = vendor.address || "";
+        
+        const { data: lastBill } = await _supabase
+            .from('bills')
+            .select('bill_no')
+            .eq('vendor_name', vendor.name)
+            .order('bill_no', { ascending: false })
+            .limit(1);
+        
+        let nextNo = (lastBill && lastBill.length > 0) ? lastBill[0].bill_no + 1 : 1;
+        document.getElementById('disp-bill-no').innerText = nextNo.toString().padStart(5, '0');
+    } else {
+        document.getElementById('disp-bill-no').innerText = "00001";
+    }
+    triggerAutoSave();
+}
+
+function triggerAutoSave() {
+    document.getElementById('sync-status').innerText = "Saving...";
+    const draftData = {
+        vName: document.getElementById('v-name').value,
+        vAddr: document.getElementById('v-addr').value,
+        items: []
+    };
+    
+    document.querySelectorAll('.veg-row').forEach(row => {
+        const q = row.querySelector('.qty').value;
+        const r = row.querySelector('.rate').value;
+        if(q > 0) {
+            draftData.items.push({ name: row.dataset.name, q, r });
+        }
+    });
+
+    localStorage.setItem('veg_bill_draft', JSON.stringify(draftData));
+
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => {
+        document.getElementById('sync-status').innerText = "Saved";
+    }, 2000);
+}
+
+function loadDraft() {
+    const saved = localStorage.getItem('veg_bill_draft');
+    if(!saved) return;
+    const data = JSON.parse(saved);
+    document.getElementById('v-name').value = data.vName || "";
+    document.getElementById('v-addr').value = data.vAddr || "";
+    
+    data.items.forEach(item => {
+        const row = Array.from(document.querySelectorAll('.veg-row')).find(r => r.dataset.name === item.name);
+        if(row) {
+            row.querySelector('.qty').value = item.q;
+            row.querySelector('.rate').value = item.r;
+            calc(row.querySelector('.qty'));
+        }
+    });
+}
+
+async function deleteVegRow(btn, name) {
+    if(confirm(`Delete ${name}?`)) {
+        const user = await checkAuth();
+        if(!user) return;
+        await _supabase.from('vegetable_prices').delete().eq('user_id', user.id).eq('veg_name', name);
+        btn.closest('tr').remove();
+        updateGrandTotal();
+    }
+}
+
 async function finalizeAndPrint() {
     const user = await checkAuth();
-    const total = parseFloat(document.getElementById('grand-total').innerText);
-    if(total <= 0) { alert("Bill is empty!"); return; }
-
-    const nextBillNo = (currentProfile.last_bill_no || 0) + 1;
-    await _supabase.from('profiles').update({ last_bill_no: nextBillNo }).eq('id', user.id);
+    if(!user) return;
     
+    const total = parseFloat(document.getElementById('grand-total').innerText);
+    const vName = document.getElementById('v-name').value;
+    const billNo = parseInt(document.getElementById('disp-bill-no').innerText);
+
+    if(total <= 0 || !vName) { alert("Please enter vendor name and items!"); return; }
+
+    await _supabase.from('bills').insert({
+        user_id: user.id,
+        vendor_name: vName,
+        bill_no: billNo,
+        total_amount: total,
+        created_at: new Date()
+    });
+
     window.print();
+    localStorage.removeItem('veg_bill_draft');
 }
 
 async function shareBillAsImage() {
@@ -98,7 +192,8 @@ async function shareBillAsImage() {
         if (navigator.share) {
             await navigator.share({ files: [file], title: 'Veg Bill' });
         } else {
-            alert("Sharing not supported on this browser.");
+            const url = URL.createObjectURL(blob);
+            window.open(url);
         }
     } catch (err) { console.error(err); }
     finally { inputs.forEach(i => i.style.borderBottom = '1px dotted #003366'); }
@@ -106,17 +201,33 @@ async function shareBillAsImage() {
 
 async function addNewVeg() {
     const user = await checkAuth();
+    if(!user) return;
+    
     const name = prompt("Enter vegetable name:");
     if(name) {
         const upperName = name.toUpperCase();
-        const { error } = await _supabase.from('vegetable_prices').upsert({ user_id: user.id, veg_name: upperName });
+        
+        const { data: existing } = await _supabase
+            .from('vegetable_prices')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('veg_name', upperName)
+            .maybeSingle();
+        
+        if(existing) {
+            alert('This vegetable already exists!');
+            return;
+        }
+        
+        const { error } = await _supabase.from('vegetable_prices').insert({ 
+            user_id: user.id, 
+            veg_name: upperName 
+        });
         
         if(!error) {
             createRow(upperName, document.querySelectorAll('.veg-row').length + 1);
-            const scrollArea = document.querySelector('.scrollable-content');
-            scrollArea.scrollTop = scrollArea.scrollHeight;
         } else {
-            alert("Error saving vegetable!");
+            alert('Error adding vegetable!');
         }
     }
 }
@@ -144,6 +255,11 @@ function filterVeg() {
     });
 }
 
-function clearBill() { if(confirm("Clear all entries?")) location.reload(); }
+function clearBill() { 
+    if(confirm("Clear all entries?")) { 
+        localStorage.removeItem('veg_bill_draft'); 
+        location.reload(); 
+    } 
+}
 
 window.onload = initBilling;

@@ -1,11 +1,9 @@
-document.getElementById('navbar').innerHTML = renderNavbar();
-document.getElementById('footer').innerHTML = renderFooter();
-
 async function loadDashboard() {
-  await checkAuth();
+  const user = await checkAuth();
+  if(!user) return;
   
-  const { data: orders } = await supabase.from('orders').select('*');
-  const { data: vendors } = await supabase.from('vendors').select('*');
+  const { data: orders } = await _supabase.from('orders').select('*').eq('user_id', user.id);
+  const { data: vendors } = await _supabase.from('vendors').select('*').eq('user_id', user.id);
   
   const totalSales = orders?.reduce((sum, o) => sum + (o.total || 0), 0) || 0;
   const pendingOrders = orders?.filter(o => o.status === 'pending').length || 0;

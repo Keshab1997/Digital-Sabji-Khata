@@ -1,10 +1,12 @@
 async function initOrders() {
-    await checkAuth();
-    loadOrders();
+    const user = await checkAuth();
+    if(user) loadOrders();
 }
 
 async function saveOrder() {
     const user = await checkAuth();
+    if(!user) return;
+    
     const name = document.getElementById('cust_name').value;
     const phone = document.getElementById('cust_phone').value;
     const details = document.getElementById('order_details').value;
@@ -28,6 +30,8 @@ async function saveOrder() {
 
 async function loadOrders() {
     const user = await checkAuth();
+    if(!user) return;
+    
     const { data: orders } = await _supabase.from('orders').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
 
     const container = document.getElementById('order-list');

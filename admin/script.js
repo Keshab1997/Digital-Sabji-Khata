@@ -1,5 +1,6 @@
 async function initAdmin() {
     const user = await checkAuth();
+    if(!user) return;
     
     const { data: p } = await _supabase.from('profiles').select('*').eq('id', user.id).single();
     if(p) {
@@ -13,6 +14,8 @@ async function initAdmin() {
 
 async function updateProfile() {
     const user = await checkAuth();
+    if(!user) return;
+    
     const updates = {
         id: user.id,
         shop_name: document.getElementById('shop_name').value,
