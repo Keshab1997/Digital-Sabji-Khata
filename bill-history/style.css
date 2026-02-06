@@ -1,0 +1,231 @@
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filters input, .filters select {
+  flex: 1;
+  min-width: 120px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.filters .btn {
+  padding: 10px 20px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.vendor-list {
+  display: grid;
+  gap: 15px;
+}
+
+.vendor-card {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.vendor-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.vendor-card h3 {
+  margin: 0 0 5px 0;
+  color: #333;
+}
+
+.vendor-card p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.bill-list {
+  display: grid;
+  gap: 15px;
+}
+
+.bill-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.bill-header h2 {
+  margin: 0;
+}
+
+.bill-header .btn {
+  padding: 8px 16px;
+  background: #666;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.bill-card {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bill-info {
+  flex: 1;
+}
+
+.bill-info h4 {
+  margin: 0 0 5px 0;
+  color: #333;
+}
+
+.bill-info p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.bill-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.status-badge {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.status-paid {
+  background: #4CAF50;
+  color: white;
+}
+
+.status-due {
+  background: #f44336;
+  color: white;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.icon-btn:hover {
+  transform: scale(1.1);
+}
+
+.btn-paid {
+  background: #4CAF50;
+  color: white;
+}
+
+.btn-due {
+  background: #f44336;
+  color: white;
+}
+
+.btn-image {
+  background: #2196F3;
+  color: white;
+}
+
+.bill-preview {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.9);
+  z-index: 9999;
+  overflow: auto;
+  padding: 10px;
+}
+
+.bill-preview-content {
+  max-width: 100%;
+  margin: 0 auto;
+  background: white;
+  border-radius: 8px;
+}
+
+.preview-actions {
+  position: sticky;
+  top: 0;
+  background: white;
+  padding: 10px;
+  border-bottom: 2px solid #ddd;
+  display: flex;
+  gap: 10px;
+  z-index: 10;
+  border-radius: 8px 8px 0 0;
+}
+
+.preview-actions button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-share {
+  background: #25D366;
+  color: white;
+}
+
+.btn-close {
+  background: #666;
+  color: white;
+}
+
+#billContent {
+  overflow-x: auto;
+  padding: 10px;
+}
+
+#billContent .bill-paper {
+  width: 100% !important;
+  min-height: auto !important;
+  padding: 15px !important;
+  font-size: 11px;
+}
+
+#billContent table {
+  font-size: 10px !important;
+}
+
+#billContent th, #billContent td {
+  padding: 4px 2px !important;
+  font-size: 10px !important;
+}

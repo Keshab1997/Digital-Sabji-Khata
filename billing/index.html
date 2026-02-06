@@ -35,10 +35,10 @@
 
             <div class="vendor-info">
                 <div class="info-line">
-                    Name: <input type="text" id="v-name" list="vendor-list" placeholder="Vendor name" oninput="handleVendorSelect(this.value)" autocomplete="off">
+                    Name: <input type="text" id="v-name" list="vendor-list" placeholder="Vendor name" oninput="handleVendorSelect(this.value)" onfocus="hideNavOnFocus()" onblur="showNavOnBlur()" autocomplete="off">
                     <datalist id="vendor-list"></datalist>
                 </div>
-                <div class="info-line">Address: <input type="text" id="v-addr" placeholder="Vendor address"></div>
+                <div class="info-line">Address: <input type="text" id="v-addr" placeholder="Vendor address" onfocus="hideNavOnFocus()" onblur="showNavOnBlur()"></div>
             </div>
 
             <table class="bill-table">
@@ -79,19 +79,12 @@
     <div class="no-print fixed-action-panel" id="entry-actions">
         <div class="action-buttons">
             <button class="btn btn-success" id="save-btn" onclick="saveBill()">💾 Save Bill</button>
-            <button class="btn btn-info" onclick="viewSavedBill()">📋 View Saved Bill</button>
+            <button class="btn btn-info" onclick="viewSavedBill()">📋 View History</button>
             <button class="btn btn-secondary" onclick="addNewVeg()">+ Add Veg</button>
             <button class="btn btn-danger" onclick="clearBill()">🗑️ Clear</button>
         </div>
     </div>
 
-    <div class="no-print fixed-action-panel" id="view-actions" style="display:none;">
-        <div class="action-buttons">
-            <button class="btn btn-primary" onclick="generatePDF()">📄 PDF</button>
-            <button class="btn btn-whatsapp" onclick="shareBillAsImage()">🟢 WhatsApp</button>
-            <button class="btn btn-secondary" onclick="backToEntry()">← Back to Entry</button>
-        </div>
-    </div>
 
     <div id="toast" class="toast"></div>
 </div>

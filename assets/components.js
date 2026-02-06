@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", function() {
                    !window.location.pathname.includes('/orders/') && 
                    !window.location.pathname.includes('/vendors/') && 
                    !window.location.pathname.includes('/admin/') &&
+                   !window.location.pathname.includes('/bill-history/') &&
                    !window.location.pathname.includes('/login/');
                    
     const prefix = isRoot ? './' : '../';
@@ -13,6 +14,7 @@ document.addEventListener("DOMContentLoaded", function() {
     <div class="mobile-nav no-print" style="position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #ddd; display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);">
         <a href="${prefix}index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">📊<br>Home</a>
         <a href="${prefix}billing/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">📝<br>Bill</a>
+        <a href="${prefix}bill-history/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">📜<br>History</a>
         <a href="${prefix}orders/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">📞<br>Order</a>
         <a href="${prefix}vendors/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">🏪<br>Vendor</a>
         <a href="${prefix}admin/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">⚙️<br>Admin</a>
@@ -29,6 +31,7 @@ async function handleLogout() {
         const isRoot = !window.location.pathname.includes('/billing/') && 
                        !window.location.pathname.includes('/orders/') && 
                        !window.location.pathname.includes('/vendors/') && 
+                       !window.location.pathname.includes('/bill-history/') && 
                        !window.location.pathname.includes('/admin/');
         const prefix = isRoot ? './' : '../';
         window.location.href = prefix + 'login/index.html';

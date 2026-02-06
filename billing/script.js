@@ -18,6 +18,10 @@ async function initBilling() {
         document.getElementById('disp-sig-name').innerText = profile.shop_name || "Owner";
     }
 
+    const { data: lastBill } = await _supabase.from('bills').select('bill_no').eq('user_id', user.id).order('bill_no', { ascending: false }).limit(1);
+    const nextBillNo = (lastBill && lastBill.length > 0) ? lastBill[0].bill_no + 1 : 1;
+    document.getElementById('disp-bill-no').innerText = nextBillNo.toString().padStart(5, '0');
+
     const { data: vendors } = await _supabase.from('vendors').select('*').eq('user_id', user.id);
     if(vendors) {
         allVendors = vendors;
@@ -62,16 +66,16 @@ function createRow(name, sl) {
 function hideNavOnFocus() {
     const actionPanel = document.querySelector('.fixed-action-panel');
     const mobileNav = document.querySelector('.mobile-nav');
-    if(actionPanel) actionPanel.style.transform = 'translateY(200%)';
-    if(mobileNav) mobileNav.style.transform = 'translateY(200%)';
+    if(actionPanel) actionPanel.style.display = 'none';
+    if(mobileNav) mobileNav.style.display = 'none';
 }
 
 function showNavOnBlur() {
     setTimeout(() => {
         const actionPanel = document.querySelector('.fixed-action-panel');
         const mobileNav = document.querySelector('.mobile-nav');
-        if(actionPanel) actionPanel.style.transform = 'translateY(0)';
-        if(mobileNav) mobileNav.style.transform = 'translateY(0)';
+        if(actionPanel) actionPanel.style.display = 'block';
+        if(mobileNav) mobileNav.style.display = 'flex';
     }, 100);
 }
 
@@ -188,11 +192,9 @@ async function generatePDF() {
 
     try {
         const canvas = await html2canvas(billElement, { 
-            scale: 3,
+            scale: 2,
             useCORS: true,
-            logging: false,
-            windowWidth: 794,
-            windowHeight: 1123
+            logging: false
         });
 
         const imgData = canvas.toDataURL('image/png');
@@ -315,68 +317,9 @@ async function saveBill() {
 }
 
 async function viewSavedBill() {
-    const lastBillNo = localStorage.getItem('last_saved_bill');
-    if(!lastBillNo) {
-        showToast("No saved bill found! Please save a bill first.", "error");
-        return;
-    }
-
-    const user = await checkAuth();
-    if(!user) return;
-    
-    const { data: bill, error: billError } = await _supabase
-        .from('bills')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('bill_no', parseInt(lastBillNo))
-        .maybeSingle();
-    
-    if(billError || !bill) {
-        showToast("Bill not found in database!", "error");
-        console.error('Bill fetch error:', billError);
-        return;
-    }
-
-    const { data: items } = await _supabase.from('bill_items').select('*').eq('bill_id', bill.id);
-    
-    document.getElementById('v-name').value = bill.vendor_name;
-    document.getElementById('disp-bill-no').innerText = bill.bill_no.toString().padStart(5, '0');
-    
-    document.querySelectorAll('.veg-row').forEach(row => {
-        row.querySelector('.qty').value = '';
-        row.querySelector('.rate').value = '';
-        row.querySelector('.row-total').innerText = '0';
-        row.classList.add('empty-row');
-    });
-    
-    items?.forEach(item => {
-        const row = Array.from(document.querySelectorAll('.veg-row')).find(r => r.dataset.name === item.veg_name);
-        if(row) {
-            row.querySelector('.qty').value = item.qty;
-            row.querySelector('.rate').value = item.rate;
-            row.querySelector('.row-total').innerText = item.amount;
-            row.classList.remove('empty-row');
-        }
-    });
-    
-    updateGrandTotal();
-    
-    document.querySelectorAll('.col-del').forEach(col => col.style.display = 'none');
-    
-    document.getElementById('entry-actions').style.display = 'none';
-    document.getElementById('view-actions').style.display = 'block';
-    
-    showToast(`Viewing Bill #${bill.bill_no} - ${bill.vendor_name}`, "success");
+    window.location.href = '../bill-history/';
 }
 
-function backToEntry() {
-    document.querySelectorAll('.col-del').forEach(col => col.style.display = 'table-cell');
-    
-    document.getElementById('entry-actions').style.display = 'block';
-    document.getElementById('view-actions').style.display = 'none';
-    
-    location.reload();
-}
 
 function showToast(message, type = "success") {
     const toast = document.getElementById('toast');

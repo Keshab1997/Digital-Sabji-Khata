@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bill History - VegBillPro</title>
+  <link rel="stylesheet" href="../assets/global.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="navbar"></div>
+  
+  <div class="container">
+    <h1>Bill History</h1>
+    
+    <div class="filters">
+      <input type="date" id="dateFrom" placeholder="From Date">
+      <input type="date" id="dateTo" placeholder="To Date">
+      <button onclick="applyFilters()" class="btn">Filter</button>
+    </div>
+
+    <div id="vendorList" class="vendor-list"></div>
+    <div id="billList" class="bill-list" style="display:none;"></div>
+    <div id="billPreview" class="bill-preview" style="display:none;"></div>
+  </div>
+
+  <div id="footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="../assets/supabase-config.js"></script>
+  <script src="../assets/components.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
