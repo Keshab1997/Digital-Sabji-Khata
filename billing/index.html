@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -34,10 +35,10 @@
 
             <div class="vendor-info">
                 <div class="info-line">
-                    Name: <input type="text" id="v-name" list="vendor-list" placeholder="Vendor Name" onchange="handleVendorSelect(this.value)">
+                    Name: <input type="text" id="v-name" list="vendor-list" placeholder="Vendor name" oninput="handleVendorSelect(this.value)" autocomplete="off">
                     <datalist id="vendor-list"></datalist>
                 </div>
-                <div class="info-line">Address: <input type="text" id="v-addr" placeholder="Vendor Address"></div>
+                <div class="info-line">Address: <input type="text" id="v-addr" placeholder="Vendor address"></div>
             </div>
 
             <table class="bill-table">
@@ -75,14 +76,24 @@
         <div style="height: 160px;"></div>
     </main>
 
-    <div class="no-print fixed-action-panel">
+    <div class="no-print fixed-action-panel" id="entry-actions">
         <div class="action-buttons">
-            <button class="btn btn-primary" onclick="finalizeAndPrint()">🖨️ Print</button>
-            <button class="btn btn-whatsapp" onclick="shareBillAsImage()">🟢 WhatsApp</button>
+            <button class="btn btn-success" id="save-btn" onclick="saveBill()">💾 Save Bill</button>
+            <button class="btn btn-info" onclick="viewSavedBill()">📋 View Saved Bill</button>
             <button class="btn btn-secondary" onclick="addNewVeg()">+ Add Veg</button>
             <button class="btn btn-danger" onclick="clearBill()">🗑️ Clear</button>
         </div>
     </div>
+
+    <div class="no-print fixed-action-panel" id="view-actions" style="display:none;">
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="generatePDF()">📄 PDF</button>
+            <button class="btn btn-whatsapp" onclick="shareBillAsImage()">🟢 WhatsApp</button>
+            <button class="btn btn-secondary" onclick="backToEntry()">← Back to Entry</button>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
 </div>
 
 <script src="../assets/supabase-config.js"></script>

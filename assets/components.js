@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", function() {
         <a href="${prefix}index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">📊<br>Home</a>
         <a href="${prefix}billing/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">📝<br>Bill</a>
         <a href="${prefix}orders/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">📞<br>Order</a>
+        <a href="${prefix}vendors/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">🏪<br>Vendor</a>
         <a href="${prefix}admin/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">⚙️<br>Admin</a>
         <a href="#" onclick="handleLogout()" style="text-align: center; text-decoration: none; color: #e74c3c; font-size: 12px;">🚪<br>Logout</a>
     </div>

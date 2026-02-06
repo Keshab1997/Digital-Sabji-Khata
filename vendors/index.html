@@ -20,25 +20,31 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Sl.</th>
                             <th>Name</th>
                             <th>Due Amount</th>
-                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody id="vendor-list-body">
-                        <!-- Data will load here -->
-                    </tbody>
+                    <tbody id="vendor-list-body"></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Details Section (opens on click) -->
-        <div id="vendor-history" class="card" style="display:none;">
-            <h2 id="v-history-name">History</h2>
-            <div id="history-content"></div>
-            <button class="btn btn-secondary" onclick="document.getElementById('vendor-history').style.display='none'">Close</button>
+        <div id="vendor-detail-modal" class="modal" style="display:none;">
+            <div class="modal-content card">
+                <h2 id="v-detail-name">Vendor Name</h2>
+                <div class="payment-box">
+                    <h4>Add Payment</h4>
+                    <div style="display: flex; gap: 5px;">
+                        <input type="number" id="pay-amount" placeholder="Amount">
+                        <button class="btn btn-primary" onclick="submitPayment()">Submit</button>
+                    </div>
+                </div>
+                <hr>
+                <h4>Bill History</h4>
+                <div id="history-list" class="history-list"></div>
+                <button class="btn btn-secondary" style="width:100%; margin-top:10px;" onclick="closeModal()">Close</button>
+            </div>
         </div>
     </div>
 

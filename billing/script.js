@@ -51,12 +51,28 @@ function createRow(name, sl) {
     tr.innerHTML = `
         <td class="col-sl">${sl}</td>
         <td class="col-desc"><b>${name}</b></td>
-        <td class="col-kg"><input type="number" step="0.001" class="qty" placeholder="0.000" oninput="calc(this)"></td>
-        <td class="col-rate"><input type="number" class="rate" placeholder="0" oninput="calc(this)"></td>
+        <td class="col-kg"><input type="number" step="0.001" class="qty" placeholder="0.000" oninput="calc(this)" onfocus="hideNavOnFocus()" onblur="showNavOnBlur()"></td>
+        <td class="col-rate"><input type="number" class="rate" placeholder="0" oninput="calc(this)" onfocus="hideNavOnFocus()" onblur="showNavOnBlur()"></td>
         <td class="col-amt row-total">0</td>
         <td class="col-del no-print"><button onclick="deleteVegRow(this, '${name}')">×</button></td>
     `;
     document.getElementById('bill-body').appendChild(tr);
+}
+
+function hideNavOnFocus() {
+    const actionPanel = document.querySelector('.fixed-action-panel');
+    const mobileNav = document.querySelector('.mobile-nav');
+    if(actionPanel) actionPanel.style.transform = 'translateY(200%)';
+    if(mobileNav) mobileNav.style.transform = 'translateY(200%)';
+}
+
+function showNavOnBlur() {
+    setTimeout(() => {
+        const actionPanel = document.querySelector('.fixed-action-panel');
+        const mobileNav = document.querySelector('.mobile-nav');
+        if(actionPanel) actionPanel.style.transform = 'translateY(0)';
+        if(mobileNav) mobileNav.style.transform = 'translateY(0)';
+    }, 100);
 }
 
 function calc(el) {
@@ -157,7 +173,75 @@ async function deleteVegRow(btn, name) {
     }
 }
 
+async function generatePDF() {
+    const vName = document.getElementById('v-name').value;
+    const billNo = document.getElementById('disp-bill-no').innerText;
+    const total = parseFloat(document.getElementById('grand-total').innerText);
+
+    if(total <= 0 || !vName) { 
+        showToast("Please enter vendor name and items!", "error"); 
+        return; 
+    }
+
+    const billElement = document.getElementById('printable-bill');
+    billElement.classList.add('is-sharing');
+
+    try {
+        const canvas = await html2canvas(billElement, { 
+            scale: 3,
+            useCORS: true,
+            logging: false,
+            windowWidth: 794,
+            windowHeight: 1123
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        
+        const pdfWidth = 210;
+        const pdfHeight = 297;
+        
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        
+        const fileName = `Bill_${vName.replace(/\s+/g, '_')}_${billNo}.pdf`;
+        
+        const pdfBlob = pdf.output('blob');
+        
+        if (navigator.share && navigator.canShare({ files: [new File([pdfBlob], fileName, { type: 'application/pdf' })] })) {
+            const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
+            await navigator.share({
+                files: [file],
+                title: `Bill ${billNo} - ${vName}`
+            });
+        } else {
+            pdf.save(fileName);
+            showToast("✅ PDF downloaded!", "success");
+        }
+    } catch (err) { 
+        console.error(err);
+        showToast("Error generating PDF", "error");
+    } finally {
+        billElement.classList.remove('is-sharing');
+    }
+}
+
 async function finalizeAndPrint() {
+    const user = await checkAuth();
+    if(!user) return;
+    
+    const total = parseFloat(document.getElementById('grand-total').innerText);
+    const vName = document.getElementById('v-name').value;
+
+    if(total <= 0 || !vName) { 
+        showToast("Please enter vendor name and items!", "error"); 
+        return; 
+    }
+
+    window.print();
+}
+
+async function saveBill() {
     const user = await checkAuth();
     if(!user) return;
     
@@ -165,27 +249,154 @@ async function finalizeAndPrint() {
     const vName = document.getElementById('v-name').value;
     const billNo = parseInt(document.getElementById('disp-bill-no').innerText);
 
-    if(total <= 0 || !vName) { alert("Please enter vendor name and items!"); return; }
+    if(total <= 0 || !vName) { 
+        showToast("Please enter vendor name and items!", "error"); 
+        return; 
+    }
 
-    await _supabase.from('bills').insert({
+    const btn = document.getElementById('save-btn');
+    btn.disabled = true;
+    btn.innerText = "Saving...";
+
+    const { data: existing } = await _supabase.from('bills').select('id').eq('user_id', user.id).eq('bill_no', billNo).maybeSingle();
+    if(existing) {
+        showToast("Bill number already exists!", "error");
+        btn.disabled = false;
+        btn.innerText = "💾 Save Bill";
+        return;
+    }
+
+    const { data: billData, error: billError } = await _supabase.from('bills').insert({
         user_id: user.id,
         vendor_name: vName,
         bill_no: billNo,
-        total_amount: total,
-        created_at: new Date()
-    });
+        total_amount: total
+    }).select().single();
 
-    window.print();
+    if(billError) {
+        showToast("Error: " + billError.message, "error");
+        btn.disabled = false;
+        btn.innerText = "💾 Save Bill";
+        return;
+    }
+
+    const items = [];
+    document.querySelectorAll('.veg-row').forEach(row => {
+        const q = parseFloat(row.querySelector('.qty').value) || 0;
+        const r = parseFloat(row.querySelector('.rate').value) || 0;
+        if(q > 0) {
+            items.push({
+                bill_id: billData.id,
+                veg_name: row.dataset.name,
+                qty: q,
+                rate: r,
+                amount: Math.round(q * r)
+            });
+        }
+    });
+    if(items.length > 0) await _supabase.from('bill_items').insert(items);
+
+    const vendor = allVendors.find(v => v.name.toLowerCase() === vName.toLowerCase());
+    if(vendor) {
+        const newDue = (vendor.total_due || 0) + total;
+        await _supabase.from('vendors').update({ total_due: newDue }).eq('id', vendor.id);
+    }
+
+    showToast(`✅ Bill #${billNo} for ${vName} is ready!`, "success");
+    localStorage.setItem('last_saved_bill', billNo);
     localStorage.removeItem('veg_bill_draft');
+    
+    setTimeout(() => {
+        const nextBillNo = billNo + 1;
+        document.getElementById('disp-bill-no').innerText = nextBillNo.toString().padStart(5, '0');
+        btn.disabled = false;
+        btn.innerText = "💾 Save Bill";
+    }, 1500);
+}
+
+async function viewSavedBill() {
+    const lastBillNo = localStorage.getItem('last_saved_bill');
+    if(!lastBillNo) {
+        showToast("No saved bill found! Please save a bill first.", "error");
+        return;
+    }
+
+    const user = await checkAuth();
+    if(!user) return;
+    
+    const { data: bill, error: billError } = await _supabase
+        .from('bills')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('bill_no', parseInt(lastBillNo))
+        .maybeSingle();
+    
+    if(billError || !bill) {
+        showToast("Bill not found in database!", "error");
+        console.error('Bill fetch error:', billError);
+        return;
+    }
+
+    const { data: items } = await _supabase.from('bill_items').select('*').eq('bill_id', bill.id);
+    
+    document.getElementById('v-name').value = bill.vendor_name;
+    document.getElementById('disp-bill-no').innerText = bill.bill_no.toString().padStart(5, '0');
+    
+    document.querySelectorAll('.veg-row').forEach(row => {
+        row.querySelector('.qty').value = '';
+        row.querySelector('.rate').value = '';
+        row.querySelector('.row-total').innerText = '0';
+        row.classList.add('empty-row');
+    });
+    
+    items?.forEach(item => {
+        const row = Array.from(document.querySelectorAll('.veg-row')).find(r => r.dataset.name === item.veg_name);
+        if(row) {
+            row.querySelector('.qty').value = item.qty;
+            row.querySelector('.rate').value = item.rate;
+            row.querySelector('.row-total').innerText = item.amount;
+            row.classList.remove('empty-row');
+        }
+    });
+    
+    updateGrandTotal();
+    
+    document.querySelectorAll('.col-del').forEach(col => col.style.display = 'none');
+    
+    document.getElementById('entry-actions').style.display = 'none';
+    document.getElementById('view-actions').style.display = 'block';
+    
+    showToast(`Viewing Bill #${bill.bill_no} - ${bill.vendor_name}`, "success");
+}
+
+function backToEntry() {
+    document.querySelectorAll('.col-del').forEach(col => col.style.display = 'table-cell');
+    
+    document.getElementById('entry-actions').style.display = 'block';
+    document.getElementById('view-actions').style.display = 'none';
+    
+    location.reload();
+}
+
+function showToast(message, type = "success") {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = `toast show ${type}`;
+    setTimeout(() => {
+        toast.className = 'toast';
+    }, 3000);
 }
 
 async function shareBillAsImage() {
     const billElement = document.getElementById('printable-bill');
-    const inputs = billElement.querySelectorAll('input');
-    inputs.forEach(i => i.style.border = 'none');
-
+    billElement.classList.add('is-sharing');
+    
     try {
-        const canvas = await html2canvas(billElement, { scale: 2 });
+        const canvas = await html2canvas(billElement, { 
+            scale: 2,
+            useCORS: true,
+            logging: false
+        });
         const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
         const file = new File([blob], "bill.png", { type: "image/png" });
 
@@ -195,8 +406,11 @@ async function shareBillAsImage() {
             const url = URL.createObjectURL(blob);
             window.open(url);
         }
-    } catch (err) { console.error(err); }
-    finally { inputs.forEach(i => i.style.borderBottom = '1px dotted #003366'); }
+    } catch (err) { 
+        console.error(err); 
+    } finally {
+        billElement.classList.remove('is-sharing');
+    }
 }
 
 async function addNewVeg() {
