@@ -18,6 +18,44 @@ async function initBilling() {
         document.getElementById('disp-sig-name').innerText = profile.shop_name || "Owner";
     }
 
+    const editBillId = localStorage.getItem('edit_bill_id');
+    if (editBillId) {
+        await loadBillForEdit(editBillId);
+        localStorage.removeItem('edit_bill_id');
+        return;
+    }
+
+    const orderToBill = localStorage.getItem('order_to_bill');
+    if (orderToBill) {
+        const { data: vendors } = await _supabase.from('vendors').select('*').eq('user_id', user.id);
+        if(vendors) {
+            allVendors = vendors;
+            const list = document.getElementById('vendor-list');
+            list.innerHTML = vendors.map(v => `<option value="${v.name}">`).join('');
+        }
+
+        const { data: vegList } = await _supabase.from('vegetable_prices').select('*').eq('user_id', user.id);
+        const tbody = document.getElementById('bill-body');
+        tbody.innerHTML = '';
+        
+        const defaultVeggies = [
+            "ALU", "PYAJ", "ADA", "RASUN", "LANKA", "POTOL", "JHINGE", "KAROLA", 
+            "BEGUN", "BANDHAKOPI", "PHULKOPI", "TOMATO", "DHONEPATA", "KUMRO",
+            "LAU", "BORBOTI", "SIM", "GAJOR", "BEET", "MULO", "DHENROSH", 
+            "PEPE", "KANCHAKOLA", "MOCHA", "THOR", "SAJNE DATA", "UCCHE", "LEBU",
+            "PATAL", "CHICHINGA", "BARBATI", "MOTOR SHUTI", "FULKOPI", "OL",
+            "KOCHU", "LALKUMRO", "SHALGAM", "PALONGSHAK", "LALSAK", "PUISHAK"
+        ];
+        const dbVegNames = vegList ? vegList.map(v => v.veg_name) : [];
+        const allVeggies = [...new Set([...dbVegNames, ...defaultVeggies])];
+        
+        allVeggies.forEach((name, i) => createRow(name, i + 1));
+        
+        await loadOrderToBill(orderToBill);
+        localStorage.removeItem('order_to_bill');
+        return;
+    }
+
     const { data: lastBill } = await _supabase.from('bills').select('bill_no').eq('user_id', user.id).order('bill_no', { ascending: false }).limit(1);
     const nextBillNo = (lastBill && lastBill.length > 0) ? lastBill[0].bill_no + 1 : 1;
     document.getElementById('disp-bill-no').innerText = nextBillNo.toString().padStart(5, '0');
@@ -318,6 +356,126 @@ async function saveBill() {
 
 async function viewSavedBill() {
     window.location.href = '../bill-history/';
+}
+
+async function loadBillForEdit(billId) {
+    const user = await checkAuth();
+    if(!user) return;
+
+    const { data: vendors } = await _supabase.from('vendors').select('*').eq('user_id', user.id);
+    if(vendors) {
+        allVendors = vendors;
+        const list = document.getElementById('vendor-list');
+        list.innerHTML = vendors.map(v => `<option value="${v.name}">`).join('');
+    }
+
+    const { data: vegList } = await _supabase.from('vegetable_prices').select('*').eq('user_id', user.id);
+    const tbody = document.getElementById('bill-body');
+    tbody.innerHTML = '';
+    
+    const defaultVeggies = [
+        "ALU", "PYAJ", "ADA", "RASUN", "LANKA", "POTOL", "JHINGE", "KAROLA", 
+        "BEGUN", "BANDHAKOPI", "PHULKOPI", "TOMATO", "DHONEPATA", "KUMRO",
+        "LAU", "BORBOTI", "SIM", "GAJOR", "BEET", "MULO", "DHENROSH", 
+        "PEPE", "KANCHAKOLA", "MOCHA", "THOR", "SAJNE DATA", "UCCHE", "LEBU",
+        "PATAL", "CHICHINGA", "BARBATI", "MOTOR SHUTI", "FULKOPI", "OL",
+        "KOCHU", "LALKUMRO", "SHALGAM", "PALONGSHAK", "LALSAK", "PUISHAK"
+    ];
+    const dbVegNames = vegList ? vegList.map(v => v.veg_name) : [];
+    const allVeggies = [...new Set([...dbVegNames, ...defaultVeggies])];
+    
+    allVeggies.forEach((name, i) => createRow(name, i + 1));
+
+    const { data: bill } = await _supabase.from('bills').select('*').eq('id', billId).single();
+    if (!bill) return;
+
+    const { data: items } = await _supabase.from('bill_items').select('*').eq('bill_id', billId);
+
+    document.getElementById('v-name').value = bill.vendor_name;
+    document.getElementById('v-addr').value = bill.vendor_address || '';
+    document.getElementById('disp-bill-no').innerText = bill.bill_no.toString().padStart(5, '0');
+
+    items?.forEach(item => {
+        const row = Array.from(document.querySelectorAll('.veg-row')).find(r => r.dataset.name === item.veg_name);
+        if(row) {
+            row.querySelector('.qty').value = item.qty;
+            row.querySelector('.rate').value = item.rate;
+            calc(row.querySelector('.qty'));
+        }
+    });
+
+    document.getElementById('save-btn').innerText = '✏️ Update Bill';
+    document.getElementById('save-btn').onclick = () => updateBill(billId);
+}
+
+async function updateBill(billId) {
+    const user = await checkAuth();
+    if(!user) return;
+    
+    const total = parseFloat(document.getElementById('grand-total').innerText);
+    const vName = document.getElementById('v-name').value;
+    const vAddr = document.getElementById('v-addr').value;
+
+    if(total <= 0 || !vName) { 
+        showToast("Please enter vendor name and items!", "error"); 
+        return; 
+    }
+
+    const btn = document.getElementById('save-btn');
+    btn.disabled = true;
+    btn.innerText = "Updating...";
+
+    const { error: billError } = await _supabase.from('bills').update({
+        vendor_name: vName,
+        vendor_address: vAddr,
+        total_amount: total
+    }).eq('id', billId);
+
+    if(billError) {
+        showToast("Error: " + billError.message, "error");
+        btn.disabled = false;
+        btn.innerText = "✏️ Update Bill";
+        return;
+    }
+
+    await _supabase.from('bill_items').delete().eq('bill_id', billId);
+
+    const items = [];
+    document.querySelectorAll('.veg-row').forEach(row => {
+        const q = parseFloat(row.querySelector('.qty').value) || 0;
+        const r = parseFloat(row.querySelector('.rate').value) || 0;
+        if(q > 0) {
+            items.push({
+                bill_id: billId,
+                veg_name: row.dataset.name,
+                qty: q,
+                rate: r,
+                amount: Math.round(q * r)
+            });
+        }
+    });
+    if(items.length > 0) await _supabase.from('bill_items').insert(items);
+
+    showToast(`✅ Bill updated successfully!`, "success");
+    
+    setTimeout(() => {
+        window.location.href = '../bill-history/';
+    }, 1500);
+}
+
+async function loadOrderToBill(orderJson) {
+    const orderData = JSON.parse(orderJson);
+    document.getElementById('v-name').value = orderData.vName;
+    
+    orderData.items.forEach(item => {
+        const row = Array.from(document.querySelectorAll('.veg-row')).find(r => r.dataset.name === item.name);
+        if(row) {
+            row.querySelector('.qty').value = item.qty;
+            calc(row.querySelector('.qty'));
+        }
+    });
+    
+    showToast("Order loaded! Add rates and save bill.", "success");
 }
 
 

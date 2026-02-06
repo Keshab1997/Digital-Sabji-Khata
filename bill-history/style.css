@@ -229,3 +229,13 @@
   padding: 4px 2px !important;
   font-size: 10px !important;
 }
+
+.btn-edit {
+  background: #FFA500;
+  color: white;
+}
+
+.btn-delete {
+  background: #f44336;
+  color: white;
+}

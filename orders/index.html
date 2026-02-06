@@ -2,34 +2,65 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Orders - VegBill Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Order Entry - VegBill Pro</title>
     <link rel="stylesheet" href="../assets/global.css">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <div class="container">
-        <div class="card">
-            <h2>New Order Entry</h2>
-            <div class="order-form">
-                <input type="text" id="cust_name" placeholder="Customer Name">
-                <input type="text" id="cust_phone" placeholder="Phone Number (WhatsApp)">
-                <textarea id="order_details" rows="4" placeholder="Order List (e.g: 5 kg potato, 2 kg onion...)"></textarea>
-                <button class="btn btn-primary" onclick="saveOrder()">Save Order</button>
-            </div>
-        </div>
 
-        <div class="card">
-            <h2>Current Orders List</h2>
-            <div id="order-list">
-                <!-- Dynamically loaded -->
+<div class="app-container">
+    <header class="no-print top-search-bar">
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" id="veg-search" placeholder="Search vegetable..." oninput="filterVeg()">
+            <span id="sync-status" style="font-size: 10px; color: #fff; white-space: nowrap;">Saved</span>
+        </div>
+    </header>
+
+    <main class="scrollable-content">
+        <div class="order-paper">
+            <div class="order-header">
+                <h2>Order Entry</h2>
+                <p>Date: <b id="disp-date"></b></p>
             </div>
+
+            <div class="vendor-info">
+                <div class="info-line">
+                    Vendor: <input type="text" id="v-name" list="vendor-list" placeholder="Vendor name" oninput="handleVendorSelect(this.value)" onfocus="hideNavOnFocus()" onblur="showNavOnBlur()" autocomplete="off">
+                    <datalist id="vendor-list"></datalist>
+                </div>
+            </div>
+
+            <table class="order-table">
+                <thead>
+                    <tr>
+                        <th class="col-sl">Sl.</th>
+                        <th class="col-desc">Vegetable</th>
+                        <th class="col-kg">KG/Gm</th>
+                        <th class="col-del no-print"></th>
+                    </tr>
+                </thead>
+                <tbody id="order-body"></tbody>
+            </table>
+        </div>
+        <div style="height: 160px;"></div>
+    </main>
+
+    <div class="no-print fixed-action-panel">
+        <div class="action-buttons">
+            <button class="btn btn-success" onclick="saveOrder()">💾 Save Order</button>
+            <button class="btn btn-info" onclick="proceedToBill()">📦 Proceed to Bill</button>
+            <button class="btn btn-secondary" onclick="addNewVeg()">+ Add Veg</button>
+            <button class="btn btn-danger" onclick="clearOrder()">🗑️ Clear</button>
         </div>
     </div>
 
-    <script src="../assets/supabase-config.js"></script>
-    <script src="../assets/components.js"></script>
-    <script src="script.js"></script>
+    <div id="toast" class="toast"></div>
+</div>
+
+<script src="../assets/supabase-config.js"></script>
+<script src="../assets/components.js"></script>
+<script src="script.js"></script>
 </body>
 </html>

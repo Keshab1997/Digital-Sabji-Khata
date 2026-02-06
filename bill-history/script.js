@@ -102,6 +102,12 @@ function displayBills(bills) {
             <button class="icon-btn btn-image" onclick="viewBillImage(${bill.id})" title="View Bill">
               📄
             </button>
+            <button class="icon-btn btn-edit" onclick="editBill(${bill.id})" title="Edit Bill">
+              ✏️
+            </button>
+            <button class="icon-btn btn-delete" onclick="deleteBill(${bill.id})" title="Delete Bill">
+              🗑️
+            </button>
           </div>
         </div>
       `;
@@ -245,6 +251,40 @@ function numberToWords(num) {
   str += (n[4] != 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'Hundred ' : '';
   str += (n[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) : '';
   return str || 'Zero';
+}
+
+async function editBill(billId) {
+  const bill = allBills.find(b => b.id === billId);
+  if (!bill) return;
+
+  localStorage.setItem('edit_bill_id', billId);
+  window.location.href = '../billing/';
+}
+
+async function deleteBill(billId) {
+  if (!confirm('Are you sure you want to delete this bill?')) return;
+
+  const { error: itemsError } = await _supabase
+    .from('bill_items')
+    .delete()
+    .eq('bill_id', billId);
+
+  if (itemsError) {
+    alert('Error deleting bill items');
+    return;
+  }
+
+  const { error: billError } = await _supabase
+    .from('bills')
+    .delete()
+    .eq('id', billId);
+
+  if (billError) {
+    alert('Error deleting bill');
+    return;
+  }
+
+  await loadVendorBills(currentVendor);
 }
 
 function applyFilters() {
