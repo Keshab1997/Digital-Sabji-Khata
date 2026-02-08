@@ -4,7 +4,13 @@ const SOFTWARE_PRICE = 5000;
 async function checkLicense() {
     const { data: { user } } = await _supabase.auth.getUser();
     if (!user) {
-        window.location.href = '/login/';
+        const path = window.location.pathname;
+        const segments = path.split('/').filter(s => s.length > 0);
+        const repoName = 'Digital-Sabji-Khata';
+        const repoIndex = segments.indexOf(repoName);
+        const depth = segments.length - 1 - repoIndex;
+        let prefix = depth <= 0 ? './' : '../'.repeat(depth);
+        window.location.href = prefix + 'login/index.html';
         return null;
     }
 
@@ -75,6 +81,13 @@ async function checkLicense() {
 }
 
 function showLicenseError(message) {
+    const path = window.location.pathname;
+    const segments = path.split('/').filter(s => s.length > 0);
+    const repoName = 'Digital-Sabji-Khata';
+    const repoIndex = segments.indexOf(repoName);
+    const depth = segments.length - 1 - repoIndex;
+    const prefix = depth <= 0 ? './' : '../'.repeat(depth);
+    
     document.body.innerHTML = `
         <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px;">
             <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-width: 600px; width: 100%;">
@@ -118,7 +131,7 @@ function showLicenseError(message) {
                 </div>
 
                 <div style="text-align: center;">
-                    <button onclick="location.href='/login/'" style="padding: 12px 30px; background: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600; box-shadow: 0 2px 8px rgba(76,175,80,0.3);">Back to Login</button>
+                    <button onclick="location.href='${prefix}login/index.html'" style="padding: 12px 30px; background: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600; box-shadow: 0 2px 8px rgba(76,175,80,0.3);">Back to Login</button>
                 </div>
             </div>
         </div>
