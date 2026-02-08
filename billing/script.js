@@ -288,6 +288,7 @@ async function saveBill() {
     
     const total = parseFloat(document.getElementById('grand-total').innerText);
     const vName = document.getElementById('v-name').value;
+    const vAddr = document.getElementById('v-addr').value;
     const billNo = parseInt(document.getElementById('disp-bill-no').innerText);
 
     if(total <= 0 || !vName) { 
@@ -310,6 +311,7 @@ async function saveBill() {
     const { data: billData, error: billError } = await _supabase.from('bills').insert({
         user_id: user.id,
         vendor_name: vName,
+        vendor_address: vAddr,
         bill_no: billNo,
         total_amount: total
     }).select().single();
