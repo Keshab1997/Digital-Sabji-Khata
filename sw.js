@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sabji-khata-cache-v6';
+const CACHE_NAME = 'sabji-khata-cache-v7';
 const urlsToCache = [
   './',
   './index.html',
@@ -7,7 +7,11 @@ const urlsToCache = [
   './assets/global.css',
   './assets/components.js',
   './assets/supabase-config.js',
-  './assets/license-check.js'
+  './assets/license-check.js',
+  './assets/icon-192x192.png',
+  './assets/icon-512x512.png',
+  './assets/apple-touch-icon.png',
+  './assets/favicon.ico'
 ];
 
 self.addEventListener('install', event => {

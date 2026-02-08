@@ -18,6 +18,9 @@ async function doLogin() {
     if (error) {
         msg.innerText = "Invalid email or password!";
     } else {
-        window.location.href = '../index.html';
+        // Clear any old localStorage data
+        localStorage.clear();
+        // Force reload to clear cache
+        window.location.replace('../index.html');
     }
 }
