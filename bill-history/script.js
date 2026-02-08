@@ -194,6 +194,7 @@ async function viewBillImage(billId) {
         <p style="font-size: 9px; font-weight: bold; margin: 1px 0;">${profile?.slogan || ''}</p>
         <p style="font-size: 9px; font-weight: bold; margin: 1px 0;">${profile?.address || ''}</p>
         <p style="font-size: 9px; font-weight: bold; margin: 1px 0;">Mobile: ${profile?.mobile || ''}</p>
+        <p style="font-size: 14px; margin: 5px 0 0 0; letter-spacing: 5px;">🥕 🥔 🥦 🌶️ 🥒 🍅 🥬 🧅</p>
       </div>
       <div style="margin: 8px 0;">
         <div style="font-size: 11px; font-weight: bold; margin-bottom: 3px;">Name: ${bill.vendor_name}</div>
@@ -231,7 +232,7 @@ async function viewBillImage(billId) {
         <p><b>Rupees in words:</b> <i>${numberToWords(bill.total_amount)} Rupees Only</i></p>
         <div style="text-align: right; margin-top: 15px;">
           <p>For, <span>${profile?.signature_name || profile?.shop_name || 'Shop Owner'}</span></p>
-          <div style="margin-top: 25px; border-top: 1px solid #003366; display: inline-block; width: 110px; text-align: center; padding-top: 2px; font-weight: bold;">Signature</div>
+          <div style="margin-top: 25px; border-top: 1px solid #003366; display: inline-block; width: 110px; text-align: center; padding-top: 2px; font-weight: bold; font-family: 'Brush Script MT', cursive; font-style: italic;">Signature</div>
         </div>
         <div style="margin-top: 20px; font-size: 8px; text-align: center; color: #888; border-top: 1px solid #eee; padding-top: 5px;">Developed by: Keshab Sarkar</div>
       </div>
