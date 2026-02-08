@@ -10,23 +10,98 @@ document.addEventListener("DOMContentLoaded", async function() {
 
     if(window.location.href.includes('login') || window.location.href.includes('signup')) return;
 
-    // Check if super admin
     const { data: { user } } = await _supabase.auth.getUser();
     const isSuperAdmin = user && user.email === 'keshabsarkar2018@gmail.com';
 
     const adminLink = isSuperAdmin 
-        ? `<a href="${prefix}admin/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">⚙️<br>Admin</a>` 
-        : `<a href="${prefix}admin/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">⚙️<br>Settings</a>`;
+        ? `<a href="${prefix}admin/index.html" class="nav-item"><div class="nav-icon">⚙️</div><div class="nav-label">Admin</div></a>` 
+        : `<a href="${prefix}admin/index.html" class="nav-item"><div class="nav-icon">⚙️</div><div class="nav-label">Settings</div></a>`;
 
     const navbar = `
-    <div class="mobile-nav no-print" style="position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #ddd; display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);">
-        <a href="${prefix}index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">📊<br>Home</a>
-        <a href="${prefix}billing/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">📝<br>Bill</a>
-        <a href="${prefix}bill-history/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">📜<br>History</a>
-        <a href="${prefix}orders/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">📞<br>Order</a>
-        <a href="${prefix}vendors/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">🏪<br>Vendor</a>
+    <style>
+        .mobile-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+            z-index: 1000;
+            box-shadow: 0 -8px 32px rgba(30, 60, 114, 0.4);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            overflow-x: auto;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: white;
+            padding: 6px 4px;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 48px;
+            flex: 1;
+            max-width: 70px;
+            position: relative;
+        }
+        .nav-item:active {
+            transform: translateY(-4px) scale(1.05);
+            background: rgba(255,255,255,0.25);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .nav-item:active::before {
+            opacity: 1;
+        }
+        .nav-icon {
+            font-size: 22px;
+            margin-bottom: 2px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            transition: transform 0.3s;
+        }
+        .nav-item:active .nav-icon {
+            transform: scale(1.15);
+        }
+        .nav-label {
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            white-space: nowrap;
+        }
+        .nav-item.logout {
+            color: #ffe0e0;
+        }
+        .nav-item.logout:active {
+            background: rgba(255,100,100,0.3);
+        }
+    </style>
+    <div class="mobile-nav no-print">
+        <a href="${prefix}index.html" class="nav-item"><div class="nav-icon">📊</div><div class="nav-label">Home</div></a>
+        <a href="${prefix}billing/index.html" class="nav-item"><div class="nav-icon">📝</div><div class="nav-label">Bill</div></a>
+        <a href="${prefix}bill-history/index.html" class="nav-item"><div class="nav-icon">📜</div><div class="nav-label">History</div></a>
+        <a href="${prefix}orders/index.html" class="nav-item"><div class="nav-icon">📞</div><div class="nav-label">Order</div></a>
+        <a href="${prefix}vendors/index.html" class="nav-item"><div class="nav-icon">🏪</div><div class="nav-label">Vendor</div></a>
         ${adminLink}
-        <a href="#" onclick="handleLogout()" style="text-align: center; text-decoration: none; color: #e74c3c; font-size: 12px;">🚪<br>Logout</a>
+        <a href="#" onclick="handleLogout()" class="nav-item logout"><div class="nav-icon">🚪</div><div class="nav-label">Logout</div></a>
     </div>
     `;
 
