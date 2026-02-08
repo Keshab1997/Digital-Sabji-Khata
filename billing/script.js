@@ -15,6 +15,7 @@ async function initBilling() {
         document.getElementById('disp-slogan').innerText = profile.slogan || "";
         document.getElementById('disp-address').innerText = profile.address || "";
         document.getElementById('disp-mobile').innerText = "Mobile: " + (profile.mobile || "");
+        document.getElementById('disp-shop-name-footer').innerText = profile.shop_name || "Shop Owner";
         document.getElementById('disp-sig-name').innerText = profile.signature_name || profile.shop_name || "Owner";
     }
 
@@ -56,9 +57,8 @@ async function initBilling() {
         return;
     }
 
-    const { data: lastBill } = await _supabase.from('bills').select('bill_no').eq('user_id', user.id).order('bill_no', { ascending: false }).limit(1);
-    const nextBillNo = (lastBill && lastBill.length > 0) ? lastBill[0].bill_no + 1 : 1;
-    document.getElementById('disp-bill-no').innerText = nextBillNo.toString().padStart(5, '0');
+    // Don't set initial bill number - will be set when vendor is selected
+    document.getElementById('disp-bill-no').innerText = '-----';
 
     const { data: vendors } = await _supabase.from('vendors').select('*').eq('user_id', user.id);
     if(vendors) {
@@ -93,8 +93,8 @@ function createRow(name, sl) {
     tr.innerHTML = `
         <td class="col-sl">${sl}</td>
         <td class="col-desc"><b>${name}</b></td>
-        <td class="col-kg"><input type="number" step="0.001" class="qty" placeholder="0.000" oninput="calc(this)" onblur="formatQty(this)" onfocus="hideNavOnFocus()" onblur="showNavOnBlur()"></td>
-        <td class="col-rate"><input type="number" class="rate" placeholder="0" oninput="calc(this)" onfocus="loadLastRate(this)" onfocus="hideNavOnFocus()" onblur="showNavOnBlur()"></td>
+        <td class="col-kg"><input type="number" step="0.001" class="qty" placeholder="0.000" oninput="handleQtyInput(this)" onblur="formatQty(this)" onfocus="hideNavOnFocus()" onblur="showNavOnBlur()"></td>
+        <td class="col-rate"><input type="number" class="rate" placeholder="0" oninput="calc(this)" onfocus="hideNavOnFocus()" onblur="showNavOnBlur()"></td>
         <td class="col-amt row-total">0</td>
         <td class="col-del no-print"><button onclick="deleteVegRow(this, '${name}')">×</button></td>
     `;
@@ -145,6 +145,9 @@ function updateGrandTotal() {
 }
 
 async function handleVendorSelect(val) {
+    const user = await checkAuth();
+    if(!user) return;
+    
     const vendor = allVendors.find(v => v.name.trim().toLowerCase() === val.trim().toLowerCase());
     if(vendor) {
         document.getElementById('v-addr').value = vendor.address || "";
@@ -152,6 +155,7 @@ async function handleVendorSelect(val) {
         const { data: lastBill } = await _supabase
             .from('bills')
             .select('bill_no')
+            .eq('user_id', user.id)
             .eq('vendor_name', vendor.name)
             .order('bill_no', { ascending: false })
             .limit(1);
@@ -300,9 +304,17 @@ async function saveBill() {
     btn.disabled = true;
     btn.innerText = "Saving...";
 
-    const { data: existing } = await _supabase.from('bills').select('id').eq('user_id', user.id).eq('bill_no', billNo).maybeSingle();
+    // Check if bill number exists for THIS vendor
+    const { data: existing } = await _supabase
+        .from('bills')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('vendor_name', vName)
+        .eq('bill_no', billNo)
+        .maybeSingle();
+    
     if(existing) {
-        showToast("Bill number already exists!", "error");
+        showToast(`Bill #${billNo} already exists for ${vName}!`, "error");
         btn.disabled = false;
         btn.innerText = "💾 Save Bill";
         return;
@@ -345,13 +357,12 @@ async function saveBill() {
         await _supabase.from('vendors').update({ total_due: newDue }).eq('id', vendor.id);
     }
 
-    showToast(`✅ Bill #${billNo} for ${vName} is ready!`, "success");
-    localStorage.setItem('last_saved_bill', billNo);
+    showToast(`✅ Bill #${billNo} for ${vName} saved!`, "success");
     localStorage.removeItem('veg_bill_draft');
     
     setTimeout(() => {
-        const nextBillNo = billNo + 1;
-        document.getElementById('disp-bill-no').innerText = nextBillNo.toString().padStart(5, '0');
+        // Refresh bill number for this vendor
+        handleVendorSelect(vName);
         btn.disabled = false;
         btn.innerText = "💾 Save Bill";
     }, 1500);
@@ -591,19 +602,34 @@ function formatQty(input) {
     }
 }
 
-async function loadLastRate(input) {
-    if (input.value) return; // Already has value
+async function handleQtyInput(qtyInput) {
+    const row = qtyInput.closest('tr');
+    const rateInput = row.querySelector('.rate');
+    
+    // Auto-fill rate if empty
+    if (qtyInput.value && !rateInput.value) {
+        await loadLastRate(rateInput);
+    }
+    
+    calc(qtyInput);
+}
+
+function handleRateFocus(input) {
+    hideNavOnFocus();
+}
+
+async function loadLastRate(rateInput) {
+    if (rateInput.value) return;
     
     const user = await checkAuth();
     if (!user) return;
     
-    const row = input.closest('tr');
+    const row = rateInput.closest('tr');
     const vegName = row.dataset.name;
     const vName = document.getElementById('v-name').value;
     
     if (!vName) return;
     
-    // Get last bill for this vendor
     const { data: lastBill } = await _supabase
         .from('bills')
         .select('id')
@@ -611,23 +637,23 @@ async function loadLastRate(input) {
         .eq('vendor_name', vName)
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
     
     if (!lastBill) return;
     
-    // Get last rate for this vegetable
     const { data: lastItem } = await _supabase
         .from('bill_items')
         .select('rate')
         .eq('bill_id', lastBill.id)
         .eq('veg_name', vegName)
-        .single();
+        .maybeSingle();
     
     if (lastItem && lastItem.rate) {
-        input.value = lastItem.rate;
-        input.style.background = '#fffacd';
+        rateInput.value = lastItem.rate;
+        rateInput.style.background = '#fffacd';
+        calc(rateInput);
         setTimeout(() => {
-            input.style.background = 'transparent';
+            rateInput.style.background = 'transparent';
         }, 1000);
     }
 }

@@ -94,7 +94,8 @@ html, body {
 
 .bill-footer { margin-top: 12px; font-size: 11px; }
 .signature-section { text-align: right; margin-top: 15px; }
-.sig-line { margin-top: 25px; border-top: 1px solid #003366; display: inline-block; width: 110px; text-align: center; padding-top: 2px; font-weight: bold; font-family: 'Brush Script MT', cursive; font-style: italic; }
+.sig-handwriting { font-family: 'Brush Script MT', cursive; font-style: italic; font-size: 18px; margin-top: 30px; margin-bottom: 5px; }
+.sig-line { border-top: 1px solid #003366; display: inline-block; width: 110px; text-align: center; padding-top: 2px; font-size: 9px; font-weight: bold; }
 
 .developer-credit {
     margin-top: 20px;
