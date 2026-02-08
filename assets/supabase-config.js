@@ -2,7 +2,14 @@
 const SUPABASE_URL = 'https://bemicqizbasldpdwglyu.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlbWljcWl6YmFzbGRwZHdnbHl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzMDY1ODUsImV4cCI6MjA4NTg4MjU4NX0.PudPE1RG_BW-Z6kxBYn7TtpPalpVAE9osCCQGyqUaeI';
 
-const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storage: window.localStorage
+    }
+});
 
 async function checkAuth() {
     const { data: { user }, error } = await _supabase.auth.getUser();
