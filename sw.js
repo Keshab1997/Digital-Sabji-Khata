@@ -1,29 +1,26 @@
-const CACHE_NAME = 'sabji-khata-v1';
-const ASSETS = [
-  'index.html',
-  'style.css',
-  'script.js',
-  'assets/global.css',
-  'assets/components.js',
-  'assets/supabase-config.js',
-  'billing/index.html',
-  'vendors/index.html',
-  'login/index.html'
+const CACHE_NAME = 'sabji-khata-cache-v1';
+const urlsToCache = [
+  './',
+  './index.html',
+  './style.css',
+  './script.js',
+  './assets/global.css',
+  './assets/components.js',
+  './assets/supabase-config.js',
+  './assets/license-check.js'
 ];
 
-self.addEventListener('install', (event) => {
+self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
-    })
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(urlsToCache))
   );
 });
 
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
+    caches.match(event.request)
+      .then(response => response || fetch(event.request))
   );
 });
 
