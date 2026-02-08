@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Digital Sabji Khata - Professional vegetable billing and accounting software for vendors. Manage bills, orders, and vendor payments efficiently.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' https://cdn-icons-png.flaticon.com data:; connect-src 'self' https://bemicqizbasldpdwglyu.supabase.co; font-src 'self';">
   
   <!-- PWA Meta Tags -->
   <link rel="manifest" href="manifest.json?v=4">
@@ -14,6 +16,10 @@
   <meta name="theme-color" content="#4CAF50">
   
   <title>Dashboard - VegBillPro</title>
+  
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://bemicqizbasldpdwglyu.supabase.co" crossorigin>
+  
   <link rel="stylesheet" href="assets/global.css">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -80,29 +86,29 @@
     </div>
 
     <div class="recent-section">
-      <div class="section-header">
-        <h2>Recent Bills</h2>
+      <h2 class="section-header">
+        <span>Recent Bills</span>
         <a href="bill-history/" class="view-all">View All →</a>
-      </div>
+      </h2>
       <div id="recentBills" class="recent-bills"></div>
     </div>
 
     <div class="top-vendors">
-      <div class="section-header">
-        <h2>Top Vendors (By Due)</h2>
+      <h2 class="section-header">
+        <span>Top Vendors (By Due)</span>
         <a href="vendors/" class="view-all">View All →</a>
-      </div>
+      </h2>
       <div id="topVendors" class="vendor-list"></div>
     </div>
   </div>
 
   <div id="footer"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="assets/supabase-config.js"></script>
-  <script src="assets/license-check.js"></script>
-  <script src="assets/components.js"></script>
-  <script src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="assets/supabase-config.js" defer></script>
+  <script src="assets/license-check.js" defer></script>
+  <script src="assets/components.js" defer></script>
+  <script src="script.js" defer></script>
   
   <!-- Service Worker Registration -->
   <script>
