@@ -3,10 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Sabji Khata">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2329/2329865.png">
   <meta name="theme-color" content="#1e3c72">
-  <meta name="description" content="Professional vegetable billing and vendor management system">
-  <link rel="manifest" href="./manifest.json">
-  <link rel="apple-touch-icon" href="./assets/icon-192.png">
+  
   <title>Dashboard - VegBillPro</title>
   <link rel="stylesheet" href="assets/global.css">
   <link rel="stylesheet" href="style.css">
@@ -97,11 +102,15 @@
   <script src="assets/license-check.js"></script>
   <script src="assets/components.js"></script>
   <script src="script.js"></script>
+  
+  <!-- Service Worker Registration -->
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('Service Worker registered'))
-        .catch(err => console.log('Service Worker registration failed'));
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('PWA Ready!'))
+          .catch(err => console.log('PWA Failed!', err));
+      });
     }
   </script>
 </body>
