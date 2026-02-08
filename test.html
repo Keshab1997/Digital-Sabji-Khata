@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Page</title>
+</head>
+<body>
+    <h1>GitHub Pages Working!</h1>
+    <p>Current URL: <span id="url"></span></p>
+    <p>Path: <span id="path"></span></p>
+    <script>
+        document.getElementById('url').textContent = window.location.href;
+        document.getElementById('path').textContent = window.location.pathname;
+    </script>
+    <br>
+    <a href="./login/index.html">Go to Login (Relative)</a>
+</body>
+</html>
