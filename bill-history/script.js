@@ -230,7 +230,7 @@ async function viewBillImage(billId) {
       <div style="margin-top: 12px; font-size: 10px;">
         <p><b>Rupees in words:</b> <i>${numberToWords(bill.total_amount)} Rupees Only</i></p>
         <div style="text-align: right; margin-top: 15px;">
-          <p>For, <span>${profile?.shop_name || 'Shop Owner'}</span></p>
+          <p>For, <span>${profile?.signature_name || profile?.shop_name || 'Shop Owner'}</span></p>
           <div style="margin-top: 25px; border-top: 1px solid #003366; display: inline-block; width: 110px; text-align: center; padding-top: 2px; font-weight: bold;">Signature</div>
         </div>
         <div style="margin-top: 20px; font-size: 8px; text-align: center; color: #888; border-top: 1px solid #eee; padding-top: 5px;">Developed by: Keshab Sarkar</div>
