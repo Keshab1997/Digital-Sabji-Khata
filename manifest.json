@@ -3,6 +3,7 @@
   "short_name": "SabjiKhata",
   "description": "সবজি ব্যবসার ডিজিটাল বিলিং এবং হিসাব খাতা",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#1e3c72",
   "theme_color": "#1e3c72",
