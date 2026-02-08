@@ -18,9 +18,12 @@ async function doLogin() {
     if (error) {
         msg.innerText = "Invalid email or password!";
     } else {
-        // Clear any old localStorage data
-        localStorage.clear();
-        // Force reload to clear cache
-        window.location.replace('../index.html');
+        // Clear only app-specific localStorage (not Supabase session)
+        localStorage.removeItem('veg_bill_draft');
+        localStorage.removeItem('order_to_bill');
+        localStorage.removeItem('edit_bill_id');
+        localStorage.removeItem('last_saved_bill');
+        
+        window.location.href = '../index.html';
     }
 }

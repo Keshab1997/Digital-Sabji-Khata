@@ -111,13 +111,16 @@ document.addEventListener("DOMContentLoaded", async function() {
 
 async function handleLogout() {
     if(confirm("Are you sure you want to logout?")) {
-        // Clear all localStorage data
-        localStorage.clear();
+        // Clear only app-specific localStorage (not Supabase session yet)
+        localStorage.removeItem('veg_bill_draft');
+        localStorage.removeItem('order_to_bill');
+        localStorage.removeItem('edit_bill_id');
+        localStorage.removeItem('last_saved_bill');
         
         // Sign out from Supabase
         await _supabase.auth.signOut();
         
-        // Force reload to clear cache
+        // Redirect to login
         const isRoot = !window.location.pathname.includes('/billing/') && 
                        !window.location.pathname.includes('/orders/') && 
                        !window.location.pathname.includes('/vendors/') && 
@@ -125,6 +128,6 @@ async function handleLogout() {
                        !window.location.pathname.includes('/payment-history/') && 
                        !window.location.pathname.includes('/admin/');
         const prefix = isRoot ? './' : '../';
-        window.location.replace(prefix + 'login/index.html');
+        window.location.href = prefix + 'login/index.html';
     }
 }
