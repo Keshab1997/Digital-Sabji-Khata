@@ -127,6 +127,33 @@ async function deleteVegRow(btn, name) {
     }
 }
 
+async function proceedToBill() {
+    const vName = document.getElementById('v-name').value;
+    if(!vName) { 
+        showToast("Please enter vendor name!", "error"); 
+        return; 
+    }
+
+    const items = [];
+    document.querySelectorAll('.veg-row').forEach(row => {
+        const q = parseFloat(row.querySelector('.qty').value) || 0;
+        if(q > 0) {
+            items.push({
+                name: row.dataset.name,
+                qty: q
+            });
+        }
+    });
+
+    if(items.length === 0) {
+        showToast("Please add at least one item!", "error");
+        return;
+    }
+
+    localStorage.setItem('order_to_bill', JSON.stringify({ vName, items }));
+    window.location.href = '../billing/';
+}
+
 async function saveOrder() {
     const user = await checkAuth();
     if(!user) return;
@@ -180,31 +207,88 @@ async function saveOrder() {
     }, 1500);
 }
 
-async function proceedToBill() {
-    const vName = document.getElementById('v-name').value;
-    if(!vName) { 
-        showToast("Please enter vendor name!", "error"); 
-        return; 
-    }
+async function viewSavedOrders() {
+    const user = await checkAuth();
+    if(!user) return;
 
-    const items = [];
-    document.querySelectorAll('.veg-row').forEach(row => {
-        const q = parseFloat(row.querySelector('.qty').value) || 0;
-        if(q > 0) {
-            items.push({
-                name: row.dataset.name,
-                qty: q
-            });
-        }
-    });
+    const { data: orders } = await _supabase
+        .from('orders')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
 
-    if(items.length === 0) {
-        showToast("Please add at least one item!", "error");
+    if(!orders || orders.length === 0) {
+        showToast("No saved orders found!", "error");
         return;
     }
 
-    localStorage.setItem('order_to_bill', JSON.stringify({ vName, items }));
-    window.location.href = '../billing/';
+    const modal = document.getElementById('orderListModal');
+    modal.innerHTML = `
+        <div class="order-list-content">
+            <div class="order-list-header">
+                <h2>Saved Orders</h2>
+                <button class="btn btn-danger" onclick="closeOrderList()">✕ Close</button>
+            </div>
+            ${await Promise.all(orders.map(async order => {
+                const { data: items } = await _supabase
+                    .from('order_items')
+                    .select('*')
+                    .eq('order_id', order.id);
+                
+                const itemsList = items.map(i => `${i.veg_name}: ${i.qty}kg`).join(', ');
+                
+                return `
+                    <div class="order-card">
+                        <h4>${order.vendor_name}</h4>
+                        <p>Date: ${new Date(order.created_at).toLocaleDateString('en-IN')}</p>
+                        <p>Items: ${itemsList}</p>
+                        <div class="order-actions">
+                            <button class="btn-load" onclick="loadOrder(${order.id})">Load</button>
+                            <button class="btn-delete-order" onclick="deleteOrder(${order.id})">Delete</button>
+                        </div>
+                    </div>
+                `;
+            })).then(cards => cards.join(''))}
+        </div>
+    `;
+    modal.style.display = 'block';
+}
+
+function closeOrderList() {
+    document.getElementById('orderListModal').style.display = 'none';
+}
+
+async function loadOrder(orderId) {
+    const { data: order } = await _supabase.from('orders').select('*').eq('id', orderId).single();
+    const { data: items } = await _supabase.from('order_items').select('*').eq('order_id', orderId);
+
+    document.getElementById('v-name').value = order.vendor_name;
+
+    document.querySelectorAll('.veg-row').forEach(row => {
+        row.querySelector('.qty').value = '';
+        row.classList.add('empty-row');
+    });
+
+    items.forEach(item => {
+        const row = Array.from(document.querySelectorAll('.veg-row')).find(r => r.dataset.name === item.veg_name);
+        if(row) {
+            row.querySelector('.qty').value = item.qty;
+            updateRow(row.querySelector('.qty'));
+        }
+    });
+
+    closeOrderList();
+    showToast("Order loaded!", "success");
+}
+
+async function deleteOrder(orderId) {
+    if(!confirm('Delete this order?')) return;
+
+    await _supabase.from('order_items').delete().eq('order_id', orderId);
+    await _supabase.from('orders').delete().eq('id', orderId);
+
+    showToast("Order deleted!", "success");
+    await viewSavedOrders();
 }
 
 async function addNewVeg() {

@@ -51,12 +51,14 @@
         <div class="action-buttons">
             <button class="btn btn-success" onclick="saveOrder()">💾 Save Order</button>
             <button class="btn btn-info" onclick="proceedToBill()">📦 Proceed to Bill</button>
+            <button class="btn btn-primary" onclick="viewSavedOrders()">📜 View Orders</button>
             <button class="btn btn-secondary" onclick="addNewVeg()">+ Add Veg</button>
             <button class="btn btn-danger" onclick="clearOrder()">🗑️ Clear</button>
         </div>
     </div>
 
     <div id="toast" class="toast"></div>
+    <div id="orderListModal" class="order-list-modal"></div>
 </div>
 
 <script src="../assets/supabase-config.js"></script>

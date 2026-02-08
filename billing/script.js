@@ -230,19 +230,20 @@ async function generatePDF() {
 
     try {
         const canvas = await html2canvas(billElement, { 
-            scale: 2,
+            scale: 4,
             useCORS: true,
-            logging: false
+            logging: false,
+            backgroundColor: '#ffffff'
         });
 
-        const imgData = canvas.toDataURL('image/png');
+        const imgData = canvas.toDataURL('image/png', 1.0);
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4');
         
         const pdfWidth = 210;
         const pdfHeight = 297;
         
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
         
         const fileName = `Bill_${vName.replace(/\s+/g, '_')}_${billNo}.pdf`;
         
@@ -494,11 +495,12 @@ async function shareBillAsImage() {
     
     try {
         const canvas = await html2canvas(billElement, { 
-            scale: 2,
+            scale: 4,
             useCORS: true,
-            logging: false
+            logging: false,
+            backgroundColor: '#ffffff'
         });
-        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1.0));
         const file = new File([blob], "bill.png", { type: "image/png" });
 
         if (navigator.share) {

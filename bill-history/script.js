@@ -1,5 +1,7 @@
 let currentVendor = null;
 let allBills = [];
+let currentPage = 0;
+const BILLS_PER_PAGE = 10;
 
 async function init() {
   await loadVendors();
@@ -55,6 +57,8 @@ async function loadVendors() {
 
 async function loadVendorBills(vendorName) {
   currentVendor = vendorName;
+  currentPage = 0;
+  allBills = [];
   const { data: { user } } = await _supabase.auth.getUser();
 
   const { data: bills } = await _supabase
@@ -62,57 +66,96 @@ async function loadVendorBills(vendorName) {
     .select('*')
     .eq('user_id', user.id)
     .eq('vendor_name', vendorName)
-    .order('bill_no', { ascending: true });
+    .order('bill_no', { ascending: true })
+    .range(0, BILLS_PER_PAGE - 1);
 
   allBills = bills || [];
-  displayBills(allBills);
+  displayBills(allBills, true);
 
   document.getElementById('vendorList').style.display = 'none';
   document.getElementById('billList').style.display = 'block';
 }
 
-function displayBills(bills) {
+function displayBills(bills, isFirstLoad = false) {
   const billList = document.getElementById('billList');
   
   if (!bills || bills.length === 0) {
+    if (isFirstLoad) {
+      billList.innerHTML = `
+        <div class="bill-header">
+          <h2>${currentVendor}</h2>
+          <button class="btn" onclick="backToVendors()">Back</button>
+        </div>
+        <p>No bills found</p>
+      `;
+    }
+    return;
+  }
+
+  const billsHTML = bills.map((bill, index) => {
+    const isToday = new Date(bill.created_at).toDateString() === new Date().toDateString();
+    const isRecent = index === 0 && isFirstLoad;
+    return `
+      <div class="bill-card ${isToday ? 'bill-today' : ''} ${isRecent ? 'bill-recent' : ''}">
+        <div class="bill-info">
+          <h4>Bill #${bill.bill_no} ${isToday ? '<span class="today-badge">TODAY</span>' : ''}</h4>
+          <p>Date: ${new Date(bill.created_at).toLocaleDateString('en-IN')}</p>
+          <p>Amount: ₹${bill.total_amount.toFixed(2)}</p>
+        </div>
+        <div class="bill-actions">
+          <button class="icon-btn btn-image" onclick="viewBillImage(${bill.id})" title="View Bill">
+            📄
+          </button>
+          <button class="icon-btn btn-edit" onclick="editBill(${bill.id})" title="Edit Bill">
+            ✏️
+          </button>
+          <button class="icon-btn btn-delete" onclick="deleteBill(${bill.id})" title="Delete Bill">
+            🗑️
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  if (isFirstLoad) {
     billList.innerHTML = `
       <div class="bill-header">
         <h2>${currentVendor}</h2>
         <button class="btn" onclick="backToVendors()">Back</button>
       </div>
-      <p>No bills found</p>
+      <div id="billCards">${billsHTML}</div>
+      <button id="loadMoreBtn" class="btn btn-load-more" onclick="loadMoreBills()" style="width: 100%; margin-top: 10px;">Load More</button>
     `;
-    return;
+  } else {
+    document.getElementById('billCards').insertAdjacentHTML('beforeend', billsHTML);
   }
+  
+  checkLoadMoreButton();
+}
 
-  billList.innerHTML = `
-    <div class="bill-header">
-      <h2>${currentVendor}</h2>
-      <button class="btn" onclick="backToVendors()">Back</button>
-    </div>
-    ${bills.map(bill => {
-      return `
-        <div class="bill-card">
-          <div class="bill-info">
-            <h4>Bill #${bill.bill_no}</h4>
-            <p>Date: ${new Date(bill.created_at).toLocaleDateString('en-IN')}</p>
-            <p>Amount: ₹${bill.total_amount.toFixed(2)}</p>
-          </div>
-          <div class="bill-actions">
-            <button class="icon-btn btn-image" onclick="viewBillImage(${bill.id})" title="View Bill">
-              📄
-            </button>
-            <button class="icon-btn btn-edit" onclick="editBill(${bill.id})" title="Edit Bill">
-              ✏️
-            </button>
-            <button class="icon-btn btn-delete" onclick="deleteBill(${bill.id})" title="Delete Bill">
-              🗑️
-            </button>
-          </div>
-        </div>
-      `;
-    }).join('')}
-  `;
+async function loadMoreBills() {
+  const { data: { user } } = await _supabase.auth.getUser();
+  currentPage++;
+
+  const { data: bills } = await _supabase
+    .from('bills')
+    .select('*')
+    .eq('user_id', user.id)
+    .eq('vendor_name', currentVendor)
+    .order('bill_no', { ascending: true })
+    .range(currentPage * BILLS_PER_PAGE, (currentPage + 1) * BILLS_PER_PAGE - 1);
+
+  if (bills && bills.length > 0) {
+    allBills = [...allBills, ...bills];
+    displayBills(bills, false);
+  }
+}
+
+function checkLoadMoreButton() {
+  const loadMoreBtn = document.getElementById('loadMoreBtn');
+  if (loadMoreBtn && allBills.length < BILLS_PER_PAGE * (currentPage + 1)) {
+    loadMoreBtn.style.display = 'none';
+  }
 }
 
 function backToVendors() {
@@ -211,12 +254,13 @@ async function shareBillFromPreview(billId) {
   
   try {
     const canvas = await html2canvas(billContent, { 
-      scale: 2,
+      scale: 4,
       useCORS: true,
-      logging: false
+      logging: false,
+      backgroundColor: '#ffffff'
     });
     
-    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1.0));
     const fileName = `Bill_${bill.vendor_name.replace(/\s+/g, '_')}_${bill.bill_no}.png`;
     const file = new File([blob], fileName, { type: 'image/png' });
 
@@ -303,7 +347,20 @@ function applyFilters() {
 
   filtered.sort((a, b) => a.bill_no - b.bill_no);
 
-  displayBills(filtered);
+  displayBills(filtered, true);
+  document.getElementById('loadMoreBtn').style.display = 'none';
+}
+
+function hideMobileNav() {
+  const mobileNav = document.querySelector('.mobile-nav');
+  if(mobileNav) mobileNav.style.display = 'none';
+}
+
+function showMobileNav() {
+  setTimeout(() => {
+    const mobileNav = document.querySelector('.mobile-nav');
+    if(mobileNav) mobileNav.style.display = 'flex';
+  }, 100);
 }
 
 init();
