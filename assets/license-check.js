@@ -76,16 +76,50 @@ async function checkLicense() {
 
 function showLicenseError(message) {
     document.body.innerHTML = `
-        <div style="display: flex; align-items: center; justify-content: center; height: 100vh; background: #f5f5f5;">
-            <div style="background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; max-width: 500px;">
-                <div style="font-size: 60px; margin-bottom: 20px;">🔒</div>
-                <h2 style="color: #f44336; margin-bottom: 15px;">Access Denied</h2>
-                <p style="color: #666; margin-bottom: 20px;">${message}</p>
-                <div style="background: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
-                    <p style="margin: 0; color: #333;"><strong>Software Price: ₹${SOFTWARE_PRICE}</strong></p>
+        <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px;">
+            <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-width: 600px; width: 100%;">
+                <div style="text-align: center; font-size: 60px; margin-bottom: 20px;">🔒</div>
+                <h2 style="color: #f44336; margin-bottom: 15px; text-align: center;">Access Denied</h2>
+                <p style="color: #666; margin-bottom: 25px; text-align: center;">${message}</p>
+                
+                <div style="background: #f0f7ff; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #2196F3;">
+                    <h3 style="margin: 0 0 15px 0; color: #1976D2; font-size: 18px;">📱 Contact for Purchase</h3>
+                    <p style="margin: 5px 0; color: #333; font-size: 16px;"><strong>Phone:</strong> <a href="tel:9382284190" style="color: #4CAF50; text-decoration: none;">9382284190</a></p>
+                    <p style="margin: 5px 0; color: #333; font-size: 16px;"><strong>Email:</strong> ${SUPER_ADMIN_EMAIL}</p>
+                    <p style="margin: 15px 0 5px 0; color: #333; font-size: 18px;"><strong>Price: ₹${SOFTWARE_PRICE}</strong></p>
                 </div>
-                <p style="color: #888; font-size: 14px;">Contact: ${SUPER_ADMIN_EMAIL}</p>
-                <button onclick="location.href='/login/'" style="margin-top: 20px; padding: 12px 30px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">Back to Login</button>
+
+                <div style="background: #fff3e0; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #FF9800;">
+                    <h3 style="margin: 0 0 15px 0; color: #F57C00; font-size: 18px;">✨ Software Features</h3>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <p style="margin: 5px 0; color: #555; font-weight: 600;">🇬🇧 English:</p>
+                        <p style="margin: 5px 0 5px 15px; color: #666; font-size: 14px;">• Digital billing with PDF & WhatsApp sharing</p>
+                        <p style="margin: 5px 0 5px 15px; color: #666; font-size: 14px;">• Vendor management & payment tracking</p>
+                        <p style="margin: 5px 0 5px 15px; color: #666; font-size: 14px;">• Bill history with date filters</p>
+                        <p style="margin: 5px 0 5px 15px; color: #666; font-size: 14px;">• Dashboard with sales analytics</p>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <p style="margin: 5px 0; color: #555; font-weight: 600;">🇮🇳 हिंदी:</p>
+                        <p style="margin: 5px 0 5px 15px; color: #666; font-size: 14px;">• PDF और WhatsApp के साथ डिजिटल बिलिंग</p>
+                        <p style="margin: 5px 0 5px 15px; color: #666; font-size: 14px;">• विक्रेता प्रबंधन और भुगतान ट्रैकिंग</p>
+                        <p style="margin: 5px 0 5px 15px; color: #666; font-size: 14px;">• तारीख फ़िल्टर के साथ बिल इतिहास</p>
+                        <p style="margin: 5px 0 5px 15px; color: #666; font-size: 14px;">• बिक्री विश्लेषण के साथ डैशबोर्ड</p>
+                    </div>
+
+                    <div>
+                        <p style="margin: 5px 0; color: #555; font-weight: 600;">🇧🇩 বাংলা:</p>
+                        <p style="margin: 5px 0 5px 15px; color: #666; font-size: 14px;">• PDF এবং WhatsApp শেয়ারিং সহ ডিজিটাল বিলিং</p>
+                        <p style="margin: 5px 0 5px 15px; color: #666; font-size: 14px;">• বিক্রেতা ব্যবস্থাপনা এবং পেমেন্ট ট্র্যাকিং</p>
+                        <p style="margin: 5px 0 5px 15px; color: #666; font-size: 14px;">• তারিখ ফিল্টার সহ বিল ইতিহাস</p>
+                        <p style="margin: 5px 0 5px 15px; color: #666; font-size: 14px;">• বিক্রয় বিশ্লেষণ সহ ড্যাশবোর্ড</p>
+                    </div>
+                </div>
+
+                <div style="text-align: center;">
+                    <button onclick="location.href='/login/'" style="padding: 12px 30px; background: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600; box-shadow: 0 2px 8px rgba(76,175,80,0.3);">Back to Login</button>
+                </div>
             </div>
         </div>
     `;

@@ -48,17 +48,17 @@ ALTER TABLE user_payments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE activity_logs ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for user_licenses
-CREATE POLICY "Users can view their own license"
-    ON user_licenses FOR SELECT
-    USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can view their own license" ON user_licenses;
+DROP POLICY IF EXISTS "Super admin can view all licenses" ON user_licenses;
+DROP POLICY IF EXISTS "System can insert licenses" ON user_licenses;
+DROP POLICY IF EXISTS "Super admin can update licenses" ON user_licenses;
 
-CREATE POLICY "Super admin can view all licenses"
+CREATE POLICY "Users can view licenses"
     ON user_licenses FOR SELECT
     USING (
-        EXISTS (
-            SELECT 1 FROM auth.users
-            WHERE auth.users.id = auth.uid()
-            AND auth.users.email = 'keshabsarkar2018@gmail.com'
+        auth.uid() = user_id 
+        OR email IN (
+            SELECT email FROM user_licenses WHERE user_id = auth.uid() AND email = 'keshabsarkar2018@gmail.com'
         )
     );
 
@@ -70,13 +70,17 @@ CREATE POLICY "Super admin can update licenses"
     ON user_licenses FOR UPDATE
     USING (
         EXISTS (
-            SELECT 1 FROM auth.users
-            WHERE auth.users.id = auth.uid()
-            AND auth.users.email = 'keshabsarkar2018@gmail.com'
+            SELECT 1 FROM user_licenses ul 
+            WHERE ul.user_id = auth.uid() 
+            AND ul.email = 'keshabsarkar2018@gmail.com'
         )
     );
 
 -- RLS Policies for user_payments
+DROP POLICY IF EXISTS "Users can view their own payments" ON user_payments;
+DROP POLICY IF EXISTS "Super admin can view all payments" ON user_payments;
+DROP POLICY IF EXISTS "Super admin can insert payments" ON user_payments;
+
 CREATE POLICY "Users can view their own payments"
     ON user_payments FOR SELECT
     USING (auth.uid() = user_id);
@@ -85,9 +89,9 @@ CREATE POLICY "Super admin can view all payments"
     ON user_payments FOR SELECT
     USING (
         EXISTS (
-            SELECT 1 FROM auth.users
-            WHERE auth.users.id = auth.uid()
-            AND auth.users.email = 'keshabsarkar2018@gmail.com'
+            SELECT 1 FROM user_licenses 
+            WHERE user_licenses.user_id = auth.uid() 
+            AND user_licenses.email = 'keshabsarkar2018@gmail.com'
         )
     );
 
@@ -95,13 +99,17 @@ CREATE POLICY "Super admin can insert payments"
     ON user_payments FOR INSERT
     WITH CHECK (
         EXISTS (
-            SELECT 1 FROM auth.users
-            WHERE auth.users.id = auth.uid()
-            AND auth.users.email = 'keshabsarkar2018@gmail.com'
+            SELECT 1 FROM user_licenses 
+            WHERE user_licenses.user_id = auth.uid() 
+            AND user_licenses.email = 'keshabsarkar2018@gmail.com'
         )
     );
 
 -- RLS Policies for activity_logs
+DROP POLICY IF EXISTS "Users can view their own logs" ON activity_logs;
+DROP POLICY IF EXISTS "Super admin can view all logs" ON activity_logs;
+DROP POLICY IF EXISTS "Anyone can insert logs" ON activity_logs;
+
 CREATE POLICY "Users can view their own logs"
     ON activity_logs FOR SELECT
     USING (auth.uid() = user_id);
@@ -110,9 +118,9 @@ CREATE POLICY "Super admin can view all logs"
     ON activity_logs FOR SELECT
     USING (
         EXISTS (
-            SELECT 1 FROM auth.users
-            WHERE auth.users.id = auth.uid()
-            AND auth.users.email = 'keshabsarkar2018@gmail.com'
+            SELECT 1 FROM user_licenses 
+            WHERE user_licenses.user_id = auth.uid() 
+            AND user_licenses.email = 'keshabsarkar2018@gmail.com'
         )
     );
 

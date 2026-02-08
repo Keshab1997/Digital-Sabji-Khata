@@ -19,24 +19,36 @@ async function init() {
 }
 
 async function loadSuperAdminData() {
-    // Load all users with licenses
-    const { data: licenses } = await _supabase
+    // Load all users with licenses (exclude super admin)
+    const { data: licenses, error } = await _supabase
         .from('user_licenses')
         .select('*')
+        .neq('email', SUPER_ADMIN_EMAIL)
         .order('created_at', { ascending: false });
+
+    console.log('Licenses loaded:', licenses);
+    console.log('Error:', error);
 
     allUsers = licenses || [];
 
-    // Calculate stats
+    // Calculate stats (excluding super admin)
     const totalUsers = allUsers.length;
     const pendingUsers = allUsers.filter(u => u.status === 'pending').length;
     const activeUsers = allUsers.filter(u => u.status === 'approved').length;
     
     const { data: payments } = await _supabase
         .from('user_payments')
-        .select('amount');
+        .select('amount, user_id');
     
-    const totalRevenue = payments?.reduce((sum, p) => sum + p.amount, 0) || 0;
+    // Exclude super admin payments
+    const { data: superAdminLicense } = await _supabase
+        .from('user_licenses')
+        .select('user_id')
+        .eq('email', SUPER_ADMIN_EMAIL)
+        .single();
+    
+    const filteredPayments = payments?.filter(p => p.user_id !== superAdminLicense?.user_id) || [];
+    const totalRevenue = filteredPayments.reduce((sum, p) => sum + p.amount, 0);
 
     document.getElementById('totalUsers').innerText = totalUsers;
     document.getElementById('pendingUsers').innerText = pendingUsers;
@@ -197,6 +209,7 @@ async function loadUserSettings(user) {
         document.getElementById('slogan').value = profile.slogan || '';
         document.getElementById('address').value = profile.address || '';
         document.getElementById('mobile').value = profile.mobile || '';
+        document.getElementById('signature_name').value = profile.signature_name || '';
     }
 
     const { data: license } = await _supabase
@@ -228,6 +241,7 @@ async function updateProfile() {
     const slogan = document.getElementById('slogan').value;
     const address = document.getElementById('address').value;
     const mobile = document.getElementById('mobile').value;
+    const signatureName = document.getElementById('signature_name').value;
 
     const { error } = await _supabase
         .from('profiles')
@@ -236,7 +250,8 @@ async function updateProfile() {
             shop_name: shopName,
             slogan,
             address,
-            mobile
+            mobile,
+            signature_name: signatureName
         });
 
     if (error) {

@@ -15,7 +15,7 @@ async function initBilling() {
         document.getElementById('disp-slogan').innerText = profile.slogan || "";
         document.getElementById('disp-address').innerText = profile.address || "";
         document.getElementById('disp-mobile').innerText = "Mobile: " + (profile.mobile || "");
-        document.getElementById('disp-sig-name').innerText = profile.shop_name || "Owner";
+        document.getElementById('disp-sig-name').innerText = profile.signature_name || profile.shop_name || "Owner";
     }
 
     const editBillId = localStorage.getItem('edit_bill_id');
