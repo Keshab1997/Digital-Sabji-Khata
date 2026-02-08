@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment History</title>
+    <link rel="stylesheet" href="../assets/global.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="btn-back" onclick="history.back()">← Back</button>
+            <h2 id="vendorName">Payment History</h2>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-item">
+                <div class="label">Total Paid</div>
+                <div class="value" id="totalPaid">₹0</div>
+            </div>
+            <div class="summary-item">
+                <div class="label">Payments</div>
+                <div class="value" id="paymentCount">0</div>
+            </div>
+        </div>
+
+        <div id="paymentList" class="payment-list"></div>
+    </div>
+
+    <script src="../assets/supabase-config.js"></script>
+    <script src="../assets/components.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

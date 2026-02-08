@@ -64,7 +64,8 @@ function displayVendors(vendors) {
                 </div>
             </div>
             <div class="vendor-actions">
-                <button class="btn-history" onclick="viewHistory('${vendor.name}')">📋 History</button>
+                <button class="btn-history" onclick="viewHistory('${vendor.name}')">📋 Bills</button>
+                <button class="btn-history" onclick="viewPaymentHistory(${vendor.id}, '${vendor.name}')">💳 Payments</button>
                 <button class="btn-payment" onclick="showPayment(${vendor.id}, '${vendor.name}', ${vendor.total_due || 0})">💰 Pay</button>
                 ${vendor.phone ? `<button class="btn-whatsapp" onclick="openWhatsApp('${vendor.phone}')">💬</button>` : ''}
                 <button class="btn-edit" onclick="editVendor(${vendor.id})">✏️</button>
@@ -199,7 +200,11 @@ function closePaymentModal() {
 }
 
 async function submitPayment() {
+    const user = await checkAuth();
+    if(!user) return;
+    
     const amount = parseFloat(document.getElementById('pay-amount').value);
+    const notes = document.getElementById('pay-notes')?.value || '';
     
     if(!amount || amount <= 0) {
         alert('Please enter valid amount');
@@ -209,8 +214,25 @@ async function submitPayment() {
     const vendor = allVendors.find(v => v.id === currentPaymentVendor);
     if(!vendor) return;
 
-    const newDue = (vendor.total_due || 0) - amount;
+    // Save payment history
+    const { error: paymentError } = await _supabase
+        .from('vendor_payments')
+        .insert({
+            user_id: user.id,
+            vendor_id: vendor.id,
+            vendor_name: vendor.name,
+            amount: amount,
+            payment_method: 'Cash',
+            notes: notes
+        });
 
+    if(paymentError) {
+        alert('Error saving payment');
+        return;
+    }
+
+    // Update vendor due
+    const newDue = (vendor.total_due || 0) - amount;
     const { error } = await _supabase
         .from('vendors')
         .update({ total_due: Math.max(0, newDue) })
@@ -223,6 +245,10 @@ async function submitPayment() {
 
     closePaymentModal();
     await loadVendors();
+}
+
+function viewPaymentHistory(vendorId, vendorName) {
+    window.location.href = `../payment-history/?vendor=${vendorId}&name=${encodeURIComponent(vendorName)}`;
 }
 
 function openWhatsApp(phone) {
