@@ -470,6 +470,9 @@ async function loadOrderToBill(orderJson) {
     const orderData = JSON.parse(orderJson);
     document.getElementById('v-name').value = orderData.vName;
     
+    // Trigger vendor select to load address and bill number
+    await handleVendorSelect(orderData.vName);
+    
     orderData.items.forEach(item => {
         const row = Array.from(document.querySelectorAll('.veg-row')).find(r => r.dataset.name === item.name);
         if(row) {
