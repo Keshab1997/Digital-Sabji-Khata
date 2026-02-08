@@ -93,8 +93,8 @@ function createRow(name, sl) {
     tr.innerHTML = `
         <td class="col-sl">${sl}</td>
         <td class="col-desc"><b>${name}</b></td>
-        <td class="col-kg"><input type="number" step="0.001" class="qty" placeholder="0.000" oninput="calc(this)" onfocus="hideNavOnFocus()" onblur="showNavOnBlur()"></td>
-        <td class="col-rate"><input type="number" class="rate" placeholder="0" oninput="calc(this)" onfocus="hideNavOnFocus()" onblur="showNavOnBlur()"></td>
+        <td class="col-kg"><input type="number" step="0.001" class="qty" placeholder="0.000" oninput="calc(this)" onblur="formatQty(this)" onfocus="hideNavOnFocus()" onblur="showNavOnBlur()"></td>
+        <td class="col-rate"><input type="number" class="rate" placeholder="0" oninput="calc(this)" onfocus="loadLastRate(this)" onfocus="hideNavOnFocus()" onblur="showNavOnBlur()"></td>
         <td class="col-amt row-total">0</td>
         <td class="col-del no-print"><button onclick="deleteVegRow(this, '${name}')">×</button></td>
     `;
@@ -582,6 +582,54 @@ function clearBill() {
         localStorage.removeItem('veg_bill_draft'); 
         location.reload(); 
     } 
+}
+
+function formatQty(input) {
+    const val = parseFloat(input.value);
+    if (val > 0 && val < 1) {
+        input.value = val.toFixed(3);
+    }
+}
+
+async function loadLastRate(input) {
+    if (input.value) return; // Already has value
+    
+    const user = await checkAuth();
+    if (!user) return;
+    
+    const row = input.closest('tr');
+    const vegName = row.dataset.name;
+    const vName = document.getElementById('v-name').value;
+    
+    if (!vName) return;
+    
+    // Get last bill for this vendor
+    const { data: lastBill } = await _supabase
+        .from('bills')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('vendor_name', vName)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+    
+    if (!lastBill) return;
+    
+    // Get last rate for this vegetable
+    const { data: lastItem } = await _supabase
+        .from('bill_items')
+        .select('rate')
+        .eq('bill_id', lastBill.id)
+        .eq('veg_name', vegName)
+        .single();
+    
+    if (lastItem && lastItem.rate) {
+        input.value = lastItem.rate;
+        input.style.background = '#fffacd';
+        setTimeout(() => {
+            input.style.background = 'transparent';
+        }, 1000);
+    }
 }
 
 window.onload = initBilling;
