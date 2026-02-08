@@ -43,7 +43,8 @@ html, body {
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-.bill-header { text-align: center; border-bottom: 2px solid #003366; padding-bottom: 6px; }
+.bill-header { text-align: center; border-bottom: 2px solid #003366; padding-bottom: 6px; position: relative; }
+.veg-border { font-size: 16px; text-align: center; margin: 5px 0; letter-spacing: 8px; }
 .top-meta { display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; }
 .bill-header h1 { font-size: 22px; margin: 4px 0; text-decoration: underline; font-weight: 900; }
 .slogan, .address, .mobile { font-size: 10px; font-weight: bold; margin: 1px 0; }

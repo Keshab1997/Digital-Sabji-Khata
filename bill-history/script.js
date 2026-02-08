@@ -186,6 +186,7 @@ async function viewBillImage(billId) {
   const billHTML = `
     <div class="bill-paper" style="background: white; color: #003366; border: 1.5px solid #003366; padding: 12px;">
       <div style="text-align: center; border-bottom: 2px solid #003366; padding-bottom: 6px;">
+        <div style="font-size: 16px; text-align: center; margin: 5px 0; letter-spacing: 8px;">🥕 🥔 🥦 🌶️ 🥒 🍅 🥬 🧅</div>
         <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: bold;">
           <span>Bill No: <b>${bill.bill_no}</b></span>
           <span>Date: <b>${new Date(bill.created_at).toLocaleDateString('en-GB')}</b></span>
@@ -194,6 +195,7 @@ async function viewBillImage(billId) {
         <p style="font-size: 9px; font-weight: bold; margin: 1px 0;">${profile?.slogan || ''}</p>
         <p style="font-size: 9px; font-weight: bold; margin: 1px 0;">${profile?.address || ''}</p>
         <p style="font-size: 9px; font-weight: bold; margin: 1px 0;">Mobile: ${profile?.mobile || ''}</p>
+        <div style="font-size: 16px; text-align: center; margin: 5px 0; letter-spacing: 8px;">🥕 🥔 🥦 🌶️ 🥒 🍅 🥬 🧅</div>
       </div>
       <div style="margin: 8px 0;">
         <div style="font-size: 11px; font-weight: bold; margin-bottom: 3px;">Name: ${bill.vendor_name}</div>
