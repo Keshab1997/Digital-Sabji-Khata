@@ -33,20 +33,39 @@ async function doSignUp() {
         showMsg("Error: " + error.message, "error");
         signupBtn.disabled = false;
     } else if (data.user) {
+        // Create profile
         const { error: profileError } = await _supabase
             .from('profiles')
-            .update({ shop_name: shopName })
-            .eq('id', data.user.id);
+            .upsert({ id: data.user.id, shop_name: shopName });
 
         if (profileError) {
-            console.error("Profile update error:", profileError.message);
+            console.error("Profile error:", profileError.message);
         }
 
-        showMsg("Account created successfully! Please check your email inbox (if confirmation required) or login.", "success");
+        // Create license
+        const trialEndDate = new Date();
+        trialEndDate.setDate(trialEndDate.getDate() + 7);
+
+        const { error: licenseError } = await _supabase
+            .from('user_licenses')
+            .insert({
+                user_id: data.user.id,
+                email: email,
+                status: 'pending',
+                license_type: 'trial',
+                trial_start_date: new Date().toISOString(),
+                trial_end_date: trialEndDate.toISOString()
+            });
+
+        if (licenseError) {
+            console.error("License error:", licenseError.message);
+        }
+
+        showMsg("Account created! Redirecting to login...", "success");
         
         setTimeout(() => {
             window.location.href = '../login/index.html';
-        }, 3000);
+        }, 2000);
     }
 }
 

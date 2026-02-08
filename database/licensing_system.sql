@@ -62,15 +62,9 @@ CREATE POLICY "Super admin can view all licenses"
         )
     );
 
-CREATE POLICY "Super admin can insert licenses"
+CREATE POLICY "System can insert licenses"
     ON user_licenses FOR INSERT
-    WITH CHECK (
-        EXISTS (
-            SELECT 1 FROM auth.users
-            WHERE auth.users.id = auth.uid()
-            AND auth.users.email = 'keshabsarkar2018@gmail.com'
-        )
-    );
+    WITH CHECK (true);
 
 CREATE POLICY "Super admin can update licenses"
     ON user_licenses FOR UPDATE

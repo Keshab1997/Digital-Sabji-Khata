@@ -3,25 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - VegBill Pro</title>
+    <title>Login - Digital Sabji Khata</title>
     <link rel="stylesheet" href="../assets/global.css">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <div class="login-wrapper">
-        <div class="card login-card">
-            <h2 style="text-align: center; color: var(--secondary);">VegBill Pro</h2>
-            <p style="text-align: center; color: #666;">Shopkeeper Login</p>
-            
-            <input type="email" id="email" placeholder="Email Address">
-            <input type="password" id="password" placeholder="Password">
-            
-            <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="doLogin()">Login</button>
-            <p id="error-msg" style="color: red; text-align: center; margin-top: 10px;"></p>
-            
-            <div style="text-align: center; margin-top: 20px;">
-                <p style="font-size: 14px;">New user? <a href="../signup/index.html" style="color: var(--primary); text-decoration: none; font-weight: bold;">Create Account</a></p>
+    <div class="login-container">
+        <div class="vegetables-bg">
+            <div class="veg-icon" style="top: 10%; left: 10%; animation-delay: 0s;">🥕</div>
+            <div class="veg-icon" style="top: 20%; right: 15%; animation-delay: 0.5s;">🥔</div>
+            <div class="veg-icon" style="top: 60%; left: 5%; animation-delay: 1s;">🥦</div>
+            <div class="veg-icon" style="bottom: 15%; right: 10%; animation-delay: 1.5s;">🌶️</div>
+            <div class="veg-icon" style="top: 40%; right: 5%; animation-delay: 2s;">🥒</div>
+            <div class="veg-icon" style="bottom: 30%; left: 15%; animation-delay: 2.5s;">🍅</div>
+        </div>
+
+        <div class="login-card">
+            <div class="app-logo">
+                <div class="logo-icon">📝</div>
+                <h1 class="app-name">Digital Sabji Khata</h1>
+                <p class="app-tagline">Smart Billing for Vegetable Business</p>
+            </div>
+
+            <div class="login-form">
+                <div class="input-group">
+                    <span class="input-icon">📧</span>
+                    <input type="email" id="email" placeholder="Email Address" required>
+                </div>
+                
+                <div class="input-group">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" id="password" placeholder="Password" required>
+                </div>
+                
+                <button class="btn-login" onclick="doLogin()">
+                    <span>Login</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+                
+                <p id="error-msg" class="error-msg"></p>
+                
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+                
+                <a href="../signup/index.html" class="btn-signup">
+                    Create New Account
+                </a>
+            </div>
+
+            <div class="developer-credit">
+                <p>👨‍💻 Developed by <strong>Keshab Sarkar</strong></p>
             </div>
         </div>
     </div>

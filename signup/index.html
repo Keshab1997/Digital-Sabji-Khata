@@ -3,43 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up - VegBill Pro</title>
+    <title>Sign Up - Digital Sabji Khata</title>
     <link rel="stylesheet" href="../assets/global.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../login/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <div class="signup-wrapper">
-        <div class="card signup-card">
-            <h2 style="text-align: center; color: var(--secondary);">VegBill Pro</h2>
-            <p style="text-align: center; color: #666; margin-bottom: 20px;">New Shopkeeper Registration</p>
-            
-            <div class="input-group">
-                <label for="shopName">Shop Name</label>
-                <input type="text" id="shopName" placeholder="e.g: Fresh Vegetable Store">
+    <div class="login-container">
+        <div class="vegetables-bg">
+            <div class="veg-icon" style="top: 10%; left: 10%; animation-delay: 0s;">🥕</div>
+            <div class="veg-icon" style="top: 20%; right: 15%; animation-delay: 0.5s;">🥔</div>
+            <div class="veg-icon" style="top: 60%; left: 5%; animation-delay: 1s;">🥦</div>
+            <div class="veg-icon" style="bottom: 15%; right: 10%; animation-delay: 1.5s;">🌶️</div>
+            <div class="veg-icon" style="top: 40%; right: 5%; animation-delay: 2s;">🥒</div>
+            <div class="veg-icon" style="bottom: 30%; left: 15%; animation-delay: 2.5s;">🍅</div>
+        </div>
+
+        <div class="login-card">
+            <div class="app-logo">
+                <div class="logo-icon">📝</div>
+                <h1 class="app-name">Digital Sabji Khata</h1>
+                <p class="app-tagline">Create Your Account</p>
             </div>
 
-            <div class="input-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" placeholder="example@mail.com">
+            <div class="login-form">
+                <div class="input-group">
+                    <span class="input-icon">🏪</span>
+                    <input type="text" id="shopName" placeholder="Shop Name" required>
+                </div>
+
+                <div class="input-group">
+                    <span class="input-icon">📧</span>
+                    <input type="email" id="email" placeholder="Email Address" required>
+                </div>
+                
+                <div class="input-group">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" id="password" placeholder="Password (min 6 chars)" required>
+                </div>
+
+                <div class="input-group">
+                    <span class="input-icon">✔️</span>
+                    <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+                </div>
+                
+                <button class="btn-login" id="signupBtn" onclick="doSignUp()">
+                    <span>Create Account</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+                
+                <p id="msg" class="error-msg"></p>
+                
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+                
+                <a href="../login/index.html" class="btn-signup">
+                    Already have an account? Login
+                </a>
             </div>
 
-            <div class="input-group">
-                <label for="password">Password (minimum 6 characters)</label>
-                <input type="password" id="password" placeholder="******">
-            </div>
-
-            <div class="input-group">
-                <label for="confirmPassword">Confirm Password</label>
-                <input type="password" id="confirmPassword" placeholder="******">
-            </div>
-            
-            <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" id="signupBtn" onclick="doSignUp()">Create Account</button>
-            
-            <p id="msg" style="text-align: center; margin-top: 15px; font-size: 14px;"></p>
-
-            <div style="text-align: center; margin-top: 20px;">
-                <p style="font-size: 14px;">Already have an account? <a href="../login/index.html" style="color: var(--primary); text-decoration: none; font-weight: bold;">Login</a></p>
+            <div class="developer-credit">
+                <p>👨💻 Developed by <strong>Keshab Sarkar</strong></p>
             </div>
         </div>
     </div>

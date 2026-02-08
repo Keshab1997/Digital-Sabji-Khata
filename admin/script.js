@@ -1,6 +1,6 @@
-const SUPER_ADMIN_EMAIL = 'keshabsarkar2018@gmail.com';
 let allUsers = [];
 let currentEditUserId = null;
+const SUPER_ADMIN_EMAIL = 'keshabsarkar2018@gmail.com';
 
 async function init() {
     const { data: { user } } = await _supabase.auth.getUser();
