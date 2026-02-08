@@ -3,39 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings - VegBill Pro</title>
+    <title>Admin Panel - VegBill Pro</title>
     <link rel="stylesheet" href="../assets/global.css">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="container">
-        <div class="card">
-            <h2>Shop Settings</h2>
-            <div class="admin-form">
-                <label>Shop Name:</label>
-                <input type="text" id="shop_name" placeholder="e.g: Fresh Vegetable Store">
+        <div id="superAdminPanel" style="display:none;">
+            <div class="card">
+                <h2>Super Admin Panel</h2>
                 
-                <label>Slogan:</label>
-                <input type="text" id="slogan" placeholder="All kinds of fresh vegetables">
-                
-                <label>Address:</label>
-                <textarea id="address" placeholder="Kolkata, 700001..."></textarea>
-                
-                <label>Mobile:</label>
-                <input type="text" id="mobile" placeholder="+91 8888888888">
-
-                <div class="trial-info">
-                    <p><strong>Subscription Status:</strong> <span id="trial_status" style="color:green;">Active</span></p>
-                    <p>Expires on: <span id="trial_date">...</span></p>
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <div class="stat-label">Total Users</div>
+                        <div class="stat-value" id="totalUsers">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Pending Approval</div>
+                        <div class="stat-value" id="pendingUsers">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Active Users</div>
+                        <div class="stat-value" id="activeUsers">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Total Revenue</div>
+                        <div class="stat-value" id="totalRevenue">₹0</div>
+                    </div>
                 </div>
-                
-                <button class="btn btn-primary" onclick="updateProfile()">Save Settings</button>
+
+                <div class="filter-section">
+                    <select id="statusFilter" onchange="filterUsers()">
+                        <option value="all">All Users</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="expired">Expired</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+
+                <div id="usersList" class="users-list"></div>
+            </div>
+        </div>
+
+        <div id="regularUserPanel" style="display:none;">
+            <div class="card">
+                <h2>Shop Settings</h2>
+                <div class="admin-form">
+                    <label>Shop Name:</label>
+                    <input type="text" id="shop_name" placeholder="e.g: Fresh Vegetable Store">
+                    
+                    <label>Slogan:</label>
+                    <input type="text" id="slogan" placeholder="All kinds of fresh vegetables">
+                    
+                    <label>Address:</label>
+                    <textarea id="address" placeholder="Kolkata, 700001..."></textarea>
+                    
+                    <label>Mobile:</label>
+                    <input type="text" id="mobile" placeholder="+91 8888888888">
+
+                    <div class="license-info">
+                        <h3>License Information</h3>
+                        <p><strong>Status:</strong> <span id="license_status"></span></p>
+                        <p><strong>Type:</strong> <span id="license_type"></span></p>
+                        <p><strong>Expires:</strong> <span id="license_expiry"></span></p>
+                        <p><strong>Software Price:</strong> <span style="color: #4CAF50; font-size: 20px; font-weight: bold;">₹5,000</span></p>
+                        <p style="color: #888; font-size: 14px;">Contact: keshabsarkar2018@gmail.com</p>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="updateProfile()">Save Settings</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="userModal" class="modal" style="display:none;">
+            <div class="modal-content card">
+                <h2 id="modalUserName">User Details</h2>
+                <div class="user-details">
+                    <p><strong>Email:</strong> <span id="modalEmail"></span></p>
+                    <p><strong>Status:</strong> <span id="modalStatus"></span></p>
+                    <p><strong>License Type:</strong> <span id="modalLicenseType"></span></p>
+                    
+                    <label>Approve/Reject:</label>
+                    <select id="modalStatusSelect">
+                        <option value="approved">Approve</option>
+                        <option value="rejected">Reject</option>
+                    </select>
+
+                    <label>License End Date:</label>
+                    <input type="date" id="modalLicenseEnd">
+
+                    <label>Payment Amount:</label>
+                    <input type="number" id="modalPaymentAmount" placeholder="5000">
+
+                    <label>Notes:</label>
+                    <textarea id="modalNotes" placeholder="Any notes..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-primary" onclick="saveUserChanges()">Save Changes</button>
+                    <button class="btn btn-secondary" onclick="closeUserModal()">Cancel</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script src="../assets/supabase-config.js"></script>
+    <script src="../assets/license-check.js"></script>
     <script src="../assets/components.js"></script>
     <script src="script.js"></script>
 </body>

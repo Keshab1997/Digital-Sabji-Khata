@@ -1,9 +1,257 @@
-.admin-form { display: flex; flex-direction: column; gap: 5px; }
-label { margin-top: 10px; font-weight: bold; font-size: 14px; }
-.trial-info {
-    margin-top: 20px;
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.stat-box {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    color: white;
+}
+
+.stat-box:nth-child(2) {
+    background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+}
+
+.stat-box:nth-child(3) {
+    background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+}
+
+.stat-box:nth-child(4) {
+    background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
+}
+
+.stat-label {
+    font-size: 12px;
+    opacity: 0.9;
+    margin-bottom: 10px;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.filter-section {
+    margin-bottom: 20px;
+}
+
+.filter-section select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.users-list {
+    display: grid;
+    gap: 15px;
+}
+
+.user-card {
+    background: white;
     padding: 15px;
-    background: #f0fdf4;
-    border: 1px solid #bbf7d0;
     border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-left: 4px solid #4CAF50;
+}
+
+.user-card.pending {
+    border-left-color: #FF9800;
+}
+
+.user-card.rejected {
+    border-left-color: #f44336;
+}
+
+.user-card.expired {
+    border-left-color: #9E9E9E;
+}
+
+.user-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 10px;
+}
+
+.user-card-header h4 {
+    margin: 0;
+    color: #333;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+}
+
+.status-badge.pending {
+    background: #FF9800;
+}
+
+.status-badge.approved {
+    background: #4CAF50;
+}
+
+.status-badge.rejected {
+    background: #f44336;
+}
+
+.status-badge.expired {
+    background: #9E9E9E;
+}
+
+.user-info p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.user-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.user-actions button {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    color: white;
+}
+
+.btn-manage {
+    background: #2196F3;
+}
+
+.btn-approve {
+    background: #4CAF50;
+}
+
+.btn-reject {
+    background: #f44336;
+}
+
+.admin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.admin-form label {
+    font-weight: bold;
+    color: #333;
+}
+
+.admin-form input, .admin-form textarea {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.admin-form textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.license-info {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.license-info h3 {
+    margin-top: 0;
+    color: #003366;
+}
+
+.license-info p {
+    margin: 10px 0;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.user-details label {
+    font-weight: bold;
+    color: #333;
+}
+
+.user-details input, .user-details select, .user-details textarea {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-actions button {
+    flex: 1;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: #4CAF50;
+    color: white;
+}
+
+.btn-secondary {
+    background: #666;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }

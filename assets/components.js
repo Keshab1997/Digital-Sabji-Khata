@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", async function() {
     const isRoot = !window.location.pathname.includes('/billing/') && 
                    !window.location.pathname.includes('/orders/') && 
                    !window.location.pathname.includes('/vendors/') && 
@@ -10,6 +10,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
     if(window.location.href.includes('login') || window.location.href.includes('signup')) return;
 
+    // Check if super admin
+    const { data: { user } } = await _supabase.auth.getUser();
+    const isSuperAdmin = user && user.email === 'keshabsarkar2018@gmail.com';
+
+    const adminLink = isSuperAdmin ? `<a href="${prefix}admin/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">⚙️<br>Admin</a>` : '';
+
     const navbar = `
     <div class="mobile-nav no-print" style="position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #ddd; display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);">
         <a href="${prefix}index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">📊<br>Home</a>
@@ -17,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function() {
         <a href="${prefix}bill-history/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">📜<br>History</a>
         <a href="${prefix}orders/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">📞<br>Order</a>
         <a href="${prefix}vendors/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">🏪<br>Vendor</a>
-        <a href="${prefix}admin/index.html" style="text-align: center; text-decoration: none; color: var(--secondary); font-size: 12px;">⚙️<br>Admin</a>
+        ${adminLink}
         <a href="#" onclick="handleLogout()" style="text-align: center; text-decoration: none; color: #e74c3c; font-size: 12px;">🚪<br>Logout</a>
     </div>
     `;

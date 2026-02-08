@@ -11,39 +11,45 @@
 <body>
     <div class="container">
         <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="header-actions">
                 <h2>Vendor List</h2>
                 <button class="btn btn-primary" onclick="showAddVendor()">+ New Vendor</button>
             </div>
             
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Due Amount</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="vendor-list-body"></tbody>
-                </table>
+            <div class="filters">
+                <input type="text" id="searchVendor" placeholder="🔍 Search vendor..." oninput="filterVendors()">
+                <select id="sortBy" onchange="sortVendors()">
+                    <option value="name">Sort by Name</option>
+                    <option value="due">Sort by Due</option>
+                    <option value="bills">Sort by Bills</option>
+                </select>
+            </div>
+
+            <div id="vendor-cards" class="vendor-cards"></div>
+        </div>
+
+        <div id="addVendorModal" class="modal" style="display:none;">
+            <div class="modal-content card">
+                <h2 id="modalTitle">Add New Vendor</h2>
+                <input type="text" id="v-name" placeholder="Vendor Name">
+                <input type="text" id="v-address" placeholder="Address">
+                <input type="tel" id="v-phone" placeholder="Phone Number">
+                <div class="modal-actions">
+                    <button class="btn btn-primary" onclick="saveVendor()" id="saveBtn">Save</button>
+                    <button class="btn btn-secondary" onclick="closeAddModal()">Cancel</button>
+                </div>
             </div>
         </div>
 
-        <div id="vendor-detail-modal" class="modal" style="display:none;">
+        <div id="paymentModal" class="modal" style="display:none;">
             <div class="modal-content card">
-                <h2 id="v-detail-name">Vendor Name</h2>
-                <div class="payment-box">
-                    <h4>Add Payment</h4>
-                    <div style="display: flex; gap: 5px;">
-                        <input type="number" id="pay-amount" placeholder="Amount">
-                        <button class="btn btn-primary" onclick="submitPayment()">Submit</button>
-                    </div>
+                <h2 id="payVendorName">Payment</h2>
+                <p>Current Due: <b id="currentDue">₹0</b></p>
+                <input type="number" id="pay-amount" placeholder="Payment Amount">
+                <div class="modal-actions">
+                    <button class="btn btn-primary" onclick="submitPayment()">Submit Payment</button>
+                    <button class="btn btn-secondary" onclick="closePaymentModal()">Cancel</button>
                 </div>
-                <hr>
-                <h4>Bill History</h4>
-                <div id="history-list" class="history-list"></div>
-                <button class="btn btn-secondary" style="width:100%; margin-top:10px;" onclick="closeModal()">Close</button>
             </div>
         </div>
     </div>

@@ -4,7 +4,14 @@ let currentPage = 0;
 const BILLS_PER_PAGE = 10;
 
 async function init() {
-  await loadVendors();
+  const urlParams = new URLSearchParams(window.location.search);
+  const vendorName = urlParams.get('vendor');
+  
+  if(vendorName) {
+    await loadVendorBills(vendorName);
+  } else {
+    await loadVendors();
+  }
 }
 
 async function loadVendors() {

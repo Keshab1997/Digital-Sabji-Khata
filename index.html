@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,15 +11,86 @@
   <div id="navbar"></div>
   
   <div class="container">
-    <h1>Dashboard</h1>
-    <div id="stats" class="stats-grid"></div>
-    <div id="recent-orders" class="card"></div>
+    <div class="welcome-section">
+      <h1 id="welcomeText">Welcome Back!</h1>
+      <p id="shopName"></p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">📝</div>
+        <div class="stat-info">
+          <div class="stat-label">Today's Bills</div>
+          <div class="stat-value" id="todayBills">0</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-info">
+          <div class="stat-label">Today's Amount</div>
+          <div class="stat-value" id="todayAmount">₹0</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📅</div>
+        <div class="stat-info">
+          <div class="stat-label">This Month</div>
+          <div class="stat-value" id="monthAmount">₹0</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🔴</div>
+        <div class="stat-info">
+          <div class="stat-label">Total Due</div>
+          <div class="stat-value" id="totalDue">₹0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quick-actions">
+      <h2>Quick Actions</h2>
+      <div class="action-grid">
+        <a href="billing/" class="action-card">
+          <div class="action-icon">📝</div>
+          <div class="action-title">New Bill</div>
+        </a>
+        <a href="orders/" class="action-card">
+          <div class="action-icon">📦</div>
+          <div class="action-title">New Order</div>
+        </a>
+        <a href="bill-history/" class="action-card">
+          <div class="action-icon">📜</div>
+          <div class="action-title">Bill History</div>
+        </a>
+        <a href="vendors/" class="action-card">
+          <div class="action-icon">🏪</div>
+          <div class="action-title">Vendors</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="recent-section">
+      <div class="section-header">
+        <h2>Recent Bills</h2>
+        <a href="bill-history/" class="view-all">View All →</a>
+      </div>
+      <div id="recentBills" class="recent-bills"></div>
+    </div>
+
+    <div class="top-vendors">
+      <div class="section-header">
+        <h2>Top Vendors (By Due)</h2>
+        <a href="vendors/" class="view-all">View All →</a>
+      </div>
+      <div id="topVendors" class="vendor-list"></div>
+    </div>
   </div>
 
   <div id="footer"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="assets/supabase-config.js"></script>
+  <script src="assets/license-check.js"></script>
   <script src="assets/components.js"></script>
   <script src="script.js"></script>
 </body>
