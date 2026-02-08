@@ -43,11 +43,52 @@ html, body {
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-.bill-header { text-align: center; border-bottom: 2px solid #003366; padding-bottom: 6px; }
-.veg-icon-line { font-size: 14px; margin: 5px 0 0 0; letter-spacing: 5px; }
-.top-meta { display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; }
-.bill-header h1 { font-size: 22px; margin: 4px 0; text-decoration: underline; font-weight: 900; }
-.slogan, .address, .mobile { font-size: 10px; font-weight: bold; margin: 1px 0; }
+.bill-header { 
+    text-align: center; 
+    border-bottom: 2px solid #003366; 
+    padding-bottom: 8px;
+    background: linear-gradient(135deg, #f0f4f8 0%, #ffffff 100%);
+    border-radius: 8px 8px 0 0;
+    margin: -12px -12px 8px -12px;
+    padding: 12px;
+    box-shadow: 0 2px 4px rgba(0,51,102,0.1);
+}
+.veg-icon-line { font-size: 16px; margin: 8px 0 0 0; letter-spacing: 8px; }
+.top-meta { 
+    display: flex; 
+    justify-content: space-between; 
+    font-size: 11px; 
+    font-weight: bold;
+    background: rgba(0,51,102,0.05);
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+.bill-header h1 { 
+    font-size: 26px; 
+    margin: 8px 0; 
+    font-weight: 900;
+    background: linear-gradient(135deg, #003366 0%, #0066cc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+.slogan { 
+    font-size: 11px; 
+    font-weight: 600; 
+    margin: 3px 0;
+    color: #0066cc;
+    font-style: italic;
+}
+.address, .mobile { 
+    font-size: 10px; 
+    font-weight: 600; 
+    margin: 2px 0;
+    color: #003366;
+}
 
 .vendor-info { margin: 8px 0; }
 .info-line { display: flex; font-size: 12px; font-weight: bold; margin-bottom: 3px; }
@@ -62,6 +103,11 @@ html, body {
 .bill-table { width: 100%; border-collapse: collapse; border: 1.5px solid #003366; table-layout: fixed; }
 .bill-table th, .bill-table td { border: 1px solid #003366; padding: 6px 2px; font-size: 12px; overflow: hidden; }
 .bill-table th { background: #f0f4f8; font-weight: 900; text-align: center; }
+
+.veg-row { transition: background-color 0.3s ease; }
+.veg-row.empty-row { background: #fafafa; }
+.veg-row:not(.empty-row) { background: #e8f5e9; border-left: 3px solid #4CAF50; }
+.veg-row:not(.empty-row):nth-child(even) { background: #f1f8f4; }
 
 .col-sl { width: 25px; text-align: center; }
 .col-desc { width: 45%; padding-left: 5px !important; font-weight: bold; }

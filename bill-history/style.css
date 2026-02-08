@@ -206,6 +206,11 @@
   font-weight: bold;
 }
 
+.btn-pdf {
+  background: #f44336;
+  color: white;
+}
+
 .btn-share {
   background: #25D366;
   color: white;

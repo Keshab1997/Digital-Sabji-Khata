@@ -184,21 +184,21 @@ async function viewBillImage(billId) {
   const { data: profile } = await _supabase.from('profiles').select('*').eq('id', user.id).single();
 
   const billHTML = `
-    <div class="bill-paper" style="background: white; color: #003366; border: 1.5px solid #003366; padding: 12px;">
-      <div style="text-align: center; border-bottom: 2px solid #003366; padding-bottom: 6px;">
-        <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: bold;">
+    <div class="bill-paper" style="background: white; color: #003366; border: 1.5px solid #003366; padding: 12px; border-radius: 8px;">
+      <div style="text-align: center; background: linear-gradient(135deg, #f0f4f8 0%, #ffffff 100%); border-radius: 8px; padding: 12px; margin: -12px -12px 8px -12px; box-shadow: 0 2px 4px rgba(0,51,102,0.1); border-bottom: 2px solid #003366;">
+        <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; background: rgba(0,51,102,0.05); padding: 6px 10px; border-radius: 6px; margin-bottom: 8px;">
           <span>Bill No: <b>${bill.bill_no}</b></span>
           <span>Date: <b>${new Date(bill.created_at).toLocaleDateString('en-GB')}</b></span>
         </div>
-        <h1 style="font-size: 18px; margin: 4px 0; text-decoration: underline; font-weight: 900;">${profile?.shop_name || 'SHOP NAME'}</h1>
-        <p style="font-size: 9px; font-weight: bold; margin: 1px 0;">${profile?.slogan || ''}</p>
-        <p style="font-size: 9px; font-weight: bold; margin: 1px 0;">${profile?.address || ''}</p>
-        <p style="font-size: 9px; font-weight: bold; margin: 1px 0;">Mobile: ${profile?.mobile || ''}</p>
-        <p style="font-size: 14px; margin: 5px 0 0 0; letter-spacing: 5px;">🥕 🥔 🥦 🌶️ 🥒 🍅 🥬 🧅</p>
+        <h1 style="font-size: 26px; margin: 8px 0; font-weight: 900; color: #003366; letter-spacing: 1px; text-transform: uppercase;">${profile?.shop_name || 'SHOP NAME'}</h1>
+        <p style="font-size: 11px; font-weight: 600; margin: 3px 0; color: #0066cc; font-style: italic;">${profile?.slogan || ''}</p>
+        <p style="font-size: 10px; font-weight: 600; margin: 2px 0; color: #003366;">${profile?.address || ''}</p>
+        <p style="font-size: 10px; font-weight: 600; margin: 2px 0; color: #003366;">Mobile: ${profile?.mobile || ''}</p>
+        <p style="font-size: 16px; margin: 8px 0 0 0; letter-spacing: 8px;">🥕 🥔 🥦 🌶️ 🥒 🍅 🥬 🧅</p>
       </div>
-      <div style="margin: 8px 0;">
-        <div style="font-size: 11px; font-weight: bold; margin-bottom: 3px;">Name: ${bill.vendor_name}</div>
-        <div style="font-size: 11px; font-weight: bold;">Address: ${bill.vendor_address || ''}</div>
+      <div style="margin: 8px 0; background: #f8f9fa; padding: 8px; border-radius: 6px; border-left: 3px solid #003366;">
+        <div style="font-size: 12px; font-weight: bold; margin-bottom: 3px; color: #003366;">Name: ${bill.vendor_name}</div>
+        <div style="font-size: 11px; font-weight: 600; color: #555;">Address: ${bill.vendor_address || ''}</div>
       </div>
       <table style="width: 100%; border-collapse: collapse; border: 1.5px solid #003366;">
         <thead>
@@ -244,6 +244,7 @@ async function viewBillImage(billId) {
   preview.innerHTML = `
     <div class="bill-preview-content">
       <div class="preview-actions">
+        <button class="btn-pdf" onclick="downloadBillPDF(${billId})">📄 PDF</button>
         <button class="btn-share" onclick="shareBillFromPreview(${billId})">📤 Share</button>
         <button class="btn-close" onclick="closeBillPreview()">✕ Close</button>
       </div>
@@ -288,6 +289,35 @@ async function shareBillFromPreview(billId) {
   } catch (err) {
     console.error(err);
     alert('Error sharing bill');
+  }
+}
+
+async function downloadBillPDF(billId) {
+  const bill = allBills.find(b => b.id === billId);
+  const billContent = document.getElementById('billContent');
+  
+  try {
+    const canvas = await html2canvas(billContent, { 
+      scale: 5,
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#ffffff'
+    });
+    
+    const imgData = canvas.toDataURL('image/png', 1.0);
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    
+    const pdfWidth = 210;
+    const pdfHeight = 297;
+    
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+    
+    const fileName = `Bill_${bill.vendor_name.replace(/\s+/g, '_')}_${bill.bill_no}.pdf`;
+    pdf.save(fileName);
+  } catch (err) {
+    console.error(err);
+    alert('Error generating PDF');
   }
 }
 
