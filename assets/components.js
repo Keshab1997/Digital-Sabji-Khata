@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                    !window.location.pathname.includes('/vendors/') && 
                    !window.location.pathname.includes('/admin/') &&
                    !window.location.pathname.includes('/bill-history/') &&
+                   !window.location.pathname.includes('/payment-history/') &&
                    !window.location.pathname.includes('/login/');
                    
     const prefix = isRoot ? './' : '../';
@@ -115,6 +116,7 @@ async function handleLogout() {
                        !window.location.pathname.includes('/orders/') && 
                        !window.location.pathname.includes('/vendors/') && 
                        !window.location.pathname.includes('/bill-history/') && 
+                       !window.location.pathname.includes('/payment-history/') && 
                        !window.location.pathname.includes('/admin/');
         const prefix = isRoot ? './' : '../';
         window.location.href = prefix + 'login/index.html';

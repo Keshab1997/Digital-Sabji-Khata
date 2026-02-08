@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sabji-khata-cache-v3';
+const CACHE_NAME = 'sabji-khata-cache-v5';
 const urlsToCache = [
   './',
   './index.html',
